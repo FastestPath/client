@@ -1,0 +1,3 @@
+rootProject.name = 'path_timer'
+
+include ':app'
