@@ -23,14 +23,11 @@ const stations = ["33rd Street", "23rd Street", "14th Street", "9th Street", "Ch
 class path_timer extends Component {
 
   state = {
-    //isoFormatText: 'pick a time (24-hour format)',
     presetHour: 12,
     presetMinute: 0,
-    //presetText: 'pick a time, default: 4:04AM',
-    //simpleText: 'pick a time',
-
     timePromptText: "Click to pick the time you'd like to arrive",
-    pickerMessage: "Select the PATH station you want to get off at"
+    pickerMessage: "Select the PATH station you want to get off at",
+    currentPosition: 'unknown',
   };
 
   showPicker = async (options) => {
@@ -50,6 +47,19 @@ class path_timer extends Component {
       console.warn(`Error in example: `, message);
     }
   };
+
+  watchID: ?number = null;
+
+  componentDidMount() {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
+      var currentPosition = JSON.stringify(position);
+      this.setState({currentPosition});
+    });
+  }
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchID);
+  }
 
   render() {
     return (
@@ -81,8 +91,13 @@ class path_timer extends Component {
           })}
         </Picker>
 
+        <Text style={styles.instructions}>
+          You want to arrive at {stations[this.state.pickerValue]} station at {_formatTime(this.state.Hour || this.state.presetHour, this.state.Minute || this.state.presetMinute)}
+        </Text>
+
         <Text>
-          You want to arrive at {stations[this.state.pickerValue]} station at {this.state.Hour}:{this.state.Minute}
+          <Text style={styles.title}>Current position: </Text>
+          {this.state.currentPosition}
         </Text>
 
       </View>
@@ -115,21 +130,16 @@ const styles = StyleSheet.create({
   instructions: {
     textAlign: 'center',
     color: '#333333',
-    marginBottom: 5,
+    marginBottom: 30,
   },
   text: {
     color: 'black',
   },
-  button: {
-    textAlign: 'center',
-    color: '#ffffff',
-    marginBottom: 7,
-    borderColor: 'blue',
-    borderRadius: 2,
-    borderWidth: 3
-  },
   picker: {
     width: 100,
+  },
+  title: {
+    fontWeight: '500',
   },
 });
 
