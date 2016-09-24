@@ -15,17 +15,18 @@ class PathTimerApp extends Component {
   }
 
   render() {
-    const { state, actions } = this.props;
+    const { directions, actions } = this.props;
+
     return (
       <PathTimer
-        directions={state.directions}
+        directions={directions}
         {...actions} />
     );
   }
 }
 
 export default connect(state => ({
-    state
+    directions: state.pathTimerReducer.directions
   }),
   (dispatch) => ({
     actions: bindActionCreators(pathTimerActions, dispatch)

@@ -8,9 +8,6 @@ export function fetchDirections (origin, destination, arrivalTime) {
   return function (dispatch) {
     dispatch(fetchDirectionsRequest(origin,destination));
 
-
-
-
     let destinationParam = destination.split(' ');
     destinationParam.push('PATH+station');
     destinationParam = destinationParam.join('+');
@@ -39,7 +36,8 @@ export function fetchDirections (origin, destination, arrivalTime) {
         return response.json();
       })
       .then((json) => {
-        dispatch(fetchDirectionsResponse(json))
+        const action = fetchDirectionsResponse(json)
+        dispatch(action);
       })
       .catch((error) => {
         dispatch(fetchDirectionsFailure(error));
@@ -47,7 +45,7 @@ export function fetchDirections (origin, destination, arrivalTime) {
   }
 }
 
-const fetchDirectionsRequest = (origin,destination) => {
+export const fetchDirectionsRequest = (origin,destination) => {
   return {
     type: DIRECTIONS_REQUEST,
     origin,
@@ -55,14 +53,14 @@ const fetchDirectionsRequest = (origin,destination) => {
   }
 }
 
-const fetchDirectionsResponse = (json) => {
+export const fetchDirectionsResponse = (json) => {
   return {
     type: DIRECTIONS_RESPONSE,
     directions: json
   }
 }
 
-const fetchDirectionsFailure = (error) => {
+export const fetchDirectionsFailure = (error) => {
   return {
     type: DIRECTIONS_FAILURE,
     error

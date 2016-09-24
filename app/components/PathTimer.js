@@ -61,6 +61,9 @@ export default class PathTimer extends Component {
   }
 
   render() {
+
+    const directions = this.props.directions;
+
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
@@ -103,6 +106,11 @@ export default class PathTimer extends Component {
           onPress={this.onSubmit.bind(this)}>
           Get ETA
         </Button>
+        { directions.status && (
+          <Text style={styles.status}>
+            Status of API response directions object: {directions.status}
+          </Text>
+        )}
       </View>
     );
   }
@@ -143,6 +151,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 30,
+  },
+  status: {
+    textAlign: 'center',
+    color: '#333333',
+    marginTop: 30,
   },
   text: {
     color: 'black',
