@@ -1,8 +1,11 @@
-# path_timer
-Displays what time you need to leave to make the PATH on time. 
+# Path Timer
+Displays what time you need to leave to make the PATH on time.
 
-TODO:
-- Parse Google Directions API response
-  - How do we make sure that the directions involve only the PATH transit and not other trains?
-- Send push notification when its time to leave
-- UI and Design 
+Development Environment Setup
+ - Install Android Studio and make sure the SDKs are installed as well
+ - Add `ANDROID_HOME` to your path. E.g. `export ANDROID_HOME=/home/me/Android/Sdk`
+ - Make sure react-native is installed globally `npm install -g react-native`
+ - Install node dependencies `npm install`
+ - Launch the packager via `npm start`
+ - Start the emulator and run `react-native run-android` to push the app to the emulator
+
