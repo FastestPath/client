@@ -8,10 +8,7 @@ export function fetchDirections (origin, destination, arrivalTime) {
   return function (dispatch) {
     dispatch(fetchDirectionsRequest(origin,destination));
 
-    let destinationParam = destination.split(' ');
-    destinationParam.push('PATH+station');
-    destinationParam = destinationParam.join('+');
-
+    const destinationParam = destination.latitude + ',' + destination.longitude;
     const originParam = origin.latitude + ',' + origin.longitude;
     const currentDate = new Date();
     if (arrivalTime.hour && arrivalTime.minute){

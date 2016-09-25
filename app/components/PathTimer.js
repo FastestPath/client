@@ -19,6 +19,33 @@ const Item = Picker.Item;
 
 const stations = ["33rd Street", "23rd Street", "14th Street", "9th Street", "Christopher Street", "Hoboken"];
 
+const stationCoordinates = {
+  "33rd Street" : {
+    latitude: 40.7485968,
+    longitude: -73.9886298
+  },
+  "23rd Street" : {
+    latitude: 40.742728,
+    longitude: -73.9927608
+  },
+  "14th Street" : {
+    latitude: 40.7370725,
+    longitude: -73.9973097
+  },
+  "9th Street" : {
+    latitude: 40.7339915,
+    longitude: -73.9987054
+  },
+  "Christopher Street" : {
+    latitude: 40.7330174,
+    longitude: -74.0075243
+  },
+  "Hoboken" : {
+    latitude: 40.7350404,
+    longitude: -74.0270187
+  }
+};
+
 export default class PathTimer extends Component {
 
   state = {
@@ -125,7 +152,7 @@ export default class PathTimer extends Component {
     var currentPosition = JSON.parse(this.state.currentPosition);
     const origin = currentPosition.coords;
     const time = {hour: this.state.Hour, minute: this.state.Minute};
-    const destination = stations[this.state.pickerValue];
+    const destination = stationCoordinates[stations[this.state.pickerValue]];
 
     this.props.fetchDirections(origin, destination, time);
   };
