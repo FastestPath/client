@@ -1,5 +1,5 @@
-import pathTimerReducer from './pathTimerReducer';
+import directionsReducer from './directionsReducer';
 
 export {
-  pathTimerReducer
+  directionsReducer
 };
