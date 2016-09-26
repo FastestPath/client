@@ -23,7 +23,7 @@ export function fetchDirections (origin, destination, arrivalTime) {
     // destination: string for path station
     // arrival_time: seconds since Jan 1 1970 UTC
 
-    let url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originParam}&destination=${destinationParam}&mode=walking&arrival_time=${arrivalTimeParam}&key=${env.googleDirectionsAPI}`;
+    let url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originParam}&destination=${destinationParam}&mode=walking&key=${env.googleDirectionsAPI}`;
 
     return fetch(url)
       .then((response) => {
