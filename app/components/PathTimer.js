@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
   StyleSheet,
@@ -15,53 +9,28 @@ import {
 } from 'react-native';
 
 import Button from 'react-native-button';
+import Station from '../constants/Station';
+import StationNames from '../constants/StationNames'
+import formatHourMinute from '../utils/formatHourMinute'
+
 const Item = Picker.Item;
-
-const stations = ["33rd Street", "23rd Street", "14th Street", "9th Street", "Christopher Street", "Hoboken"];
-
-const stationCoordinates = {
-  "33rd Street" : {
-    latitude: 40.7485968,
-    longitude: -73.9886298
-  },
-  "23rd Street" : {
-    latitude: 40.742728,
-    longitude: -73.9927608
-  },
-  "14th Street" : {
-    latitude: 40.7370725,
-    longitude: -73.9973097
-  },
-  "9th Street" : {
-    latitude: 40.7339915,
-    longitude: -73.9987054
-  },
-  "Christopher Street" : {
-    latitude: 40.7330174,
-    longitude: -74.0075243
-  },
-  "Hoboken" : {
-    latitude: 40.7350404,
-    longitude: -74.0270187
-  }
-};
 
 export default class PathTimer extends Component {
 
   state = {
     presetHour: 12,
     presetMinute: 0,
-    timePromptText: "Click to pick the time you'd like to arrive",
-    pickerMessage: "Select the PATH station you want to get off at",
+    timePromptText: 'Click to pick the time you\'d like to arrive',
+    pickerMessage: 'Select the PATH station you want to get off at',
     currentPosition: 'unknown',
   };
 
   showPicker = async (options) => {
     try {
-      const {action, minute, hour} = await TimePickerAndroid.open(options);
+      const { action, minute, hour } = await TimePickerAndroid.open(options);
       var newState = {};
       if (action === TimePickerAndroid.timeSetAction) {
-        newState['Text'] = _formatTime(hour, minute);
+        newState['Text'] = formatHourMinute(hour, minute);
         newState['Hour'] = hour;
         newState['Minute'] = minute;
       } else if (action === TimePickerAndroid.dismissedAction) {
@@ -74,21 +43,20 @@ export default class PathTimer extends Component {
     }
   };
 
-  watchID: ?number = null;
+  watchId: ?number = null;
 
   componentDidMount() {
-    this.watchID = navigator.geolocation.watchPosition((position) => {
+    this.watchId = navigator.geolocation.watchPosition((position) => {
       var currentPosition = JSON.stringify(position);
       this.setState({currentPosition});
     });
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID);
+    navigator.geolocation.clearWatch(this.watchId);
   }
 
   render() {
-
     const directions = this.props.directions;
 
     return (
@@ -97,7 +65,8 @@ export default class PathTimer extends Component {
           Welcome to PATH timer!
         </Text>
         <Text style={styles.instructions}>
-          Select which station you'd like to arrive at, and what time you'd like to be there.
+          Select which station you'd like to arrive at,
+          and what time you'd like to be there.
         </Text>
 
         <Button
@@ -112,8 +81,8 @@ export default class PathTimer extends Component {
           style={styles.picker}
           selectedValue={this.state.pickerValue || this.state.pickerMessage}
           onValueChange={this.onValueChange.bind(this)}
-          mode="dropdown">
-          { stations.map((station, index) => {
+          mode='dropdown'>
+          { Station.map((station, index) => {
             return (
               <Item label={station} value={index} key={index} />
             );
@@ -121,7 +90,7 @@ export default class PathTimer extends Component {
         </Picker>
 
         <Text style={styles.instructions}>
-          You want to arrive at {stations[this.state.pickerValue]} station at {_formatTime(this.state.Hour || this.state.presetHour, this.state.Minute || this.state.presetMinute)}
+          You want to arrive at {Stations[this.state.pickerValue]} station at {formatHourMinute(this.state.Hour || this.state.presetHour, this.state.Minute || this.state.presetMinute)}
         </Text>
 
         <Text>
@@ -152,14 +121,10 @@ export default class PathTimer extends Component {
     var currentPosition = JSON.parse(this.state.currentPosition);
     const origin = currentPosition.coords;
     const time = {hour: this.state.Hour, minute: this.state.Minute};
-    const destination = stationCoordinates[stations[this.state.pickerValue]];
+    const destination = stationCoordinates[Stations[this.state.pickerValue]];
 
     this.props.fetchDirections(origin, destination, time);
   };
-}
-
-function _formatTime(hour, minute) {
-  return hour + ':' + (minute < 10 ? '0' + minute : minute);
 }
 
 const styles = StyleSheet.create({
