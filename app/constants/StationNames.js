@@ -1,5 +1,7 @@
 import Station from 'Station'
 
-export default Object.keys(Station).map(function({ name }) {
+const StationNames = Object.values(Station).map(function({ name }) {
   return name;
 });
+
+export default StationNames;

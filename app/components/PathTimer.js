@@ -3,26 +3,22 @@ import {
   StyleSheet,
   Text,
   View,
-  Picker,
   TimePickerAndroid,
   TouchableNativeFeedback
 } from 'react-native';
-
 import Button from 'react-native-button';
 import Station from '../constants/Station';
-import StationNames from '../constants/StationNames'
-import formatHourMinute from '../utils/formatHourMinute'
-
-const Item = Picker.Item;
+import StationPicker from '../components/StationPicker';
+import formatHourMinute from '../utils/formatHourMinute';
 
 export default class PathTimer extends Component {
 
   state = {
+    currentPosition: 'unknown',
     presetHour: 12,
     presetMinute: 0,
+    selectedStation: null,
     timePromptText: 'Click to pick the time you\'d like to arrive',
-    pickerMessage: 'Select the PATH station you want to get off at',
-    currentPosition: 'unknown',
   };
 
   showPicker = async (options) => {
@@ -56,8 +52,33 @@ export default class PathTimer extends Component {
     navigator.geolocation.clearWatch(this.watchId);
   }
 
+  handleStationChange(value) {
+    this.setState({ selectedStation: value });
+  }
+
+  renderInstructions() {
+    const {
+      hour,
+      minute,
+      presetHour,
+      presetMinute,
+      selectedStation
+    } = this.state;
+
+    const stationName = Station[selectedStation].name;
+    const arrivalTime = formatHourMinute(hour || presetHour,
+      minute || presetMinute);
+
+    return (
+      <Text style={styles.instructions}>
+        You want to arrive at {stationName} station at {arrivalTime}
+      </Text>
+    );
+  }
+
   render() {
     const directions = this.props.directions;
+    const { selectedStation } = this.state;
 
     return (
       <View style={styles.container}>
@@ -77,21 +98,13 @@ export default class PathTimer extends Component {
           {this.state.timePromptText}
         </Button>
 
-        <Picker
-          style={styles.picker}
-          selectedValue={this.state.pickerValue || this.state.pickerMessage}
-          onValueChange={this.onValueChange.bind(this)}
-          mode='dropdown'>
-          { Station.map((station, index) => {
-            return (
-              <Item label={station} value={index} key={index} />
-            );
-          })}
-        </Picker>
+        <StationPicker
+          defaultText='Select the PATH station you want to get off at'
+          selectedValue={selectedStation}
+          onValueChange={this.handleStationChange.bind(this)}
+        />
 
-        <Text style={styles.instructions}>
-          You want to arrive at {Stations[this.state.pickerValue]} station at {formatHourMinute(this.state.Hour || this.state.presetHour, this.state.Minute || this.state.presetMinute)}
-        </Text>
+        { selectedStation && this.renderInstructions() }
 
         <Text>
           <Text style={styles.title}>Current position: </Text>
@@ -110,12 +123,6 @@ export default class PathTimer extends Component {
       </View>
     );
   }
-
-  onValueChange = (value: string) => {
-    const newState = {};
-    newState['pickerValue'] = value;
-    this.setState(newState);
-  };
 
   onSubmit = () => {
     var currentPosition = JSON.parse(this.state.currentPosition);
@@ -151,9 +158,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
-  },
-  picker: {
-    width: 100,
   },
   title: {
     fontWeight: '500',

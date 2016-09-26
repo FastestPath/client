@@ -4,7 +4,19 @@ import PathTimer from '../components/PathTimer';
 import * as pathTimerActions from '../actions/pathTimerActions';
 import { connect } from 'react-redux';
 
-class PathTimerApp extends Component {
+function mapStateToProps(state) {
+  return {
+    directions: state.pathTimerReducer.directions
+  };
+}
+
+function wrapActions(dispatch) {
+  return {
+    actions: bindActionCreators(pathTimerActions, dispatch)
+  };
+}
+
+class App extends Component {
   constructor(props) {
     super(props);
   }
@@ -21,10 +33,4 @@ class PathTimerApp extends Component {
   }
 }
 
-export default connect((state) => {
-    directions: state.pathTimerReducer.directions
-  },
-  (dispatch) => {
-    actions: bindActionCreators(pathTimerActions, dispatch)
-  }
-)(PathTimerApp);
+export default connect(mapStateToProps, wrapActions)(App);
