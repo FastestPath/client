@@ -25,8 +25,9 @@ function mapStateToProps(state) {
 
 function wrapActions(dispatch) {
   return {
-    actions: bindActionCreators(actions, dispatch)
-  };
+    //have to specify the default actions since we're importing from a folder.
+    actions: bindActionCreators(actions.default, dispatch)
+  }
 }
 
 class PathTimer extends Component {

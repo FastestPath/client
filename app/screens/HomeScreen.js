@@ -100,10 +100,10 @@ const PathTimer = React.createClass({
 
     const positionJson = JSON.parse(currentPosition);
     const origin = positionJson.coords;
-    const destination = Station[selectedStation];
+    const destination = Station[selectedStation].location;
     const time = { hour, minute };
 
-    this.props.fetchDirections(origin, destination, time);
+    this.props.fetchDirections({origin, destination, time});
   },
 
   handleStationChange(value) {

@@ -1,4 +1,5 @@
 import env from '../../env';
+import getClosestStation from '../utils/computeDistance';
 
 export const DIRECTIONS_REQUEST = 'DIRECTIONS_REQUEST';
 export const DIRECTIONS_RESPONSE = 'DIRECTIONS_RESPONSE';
@@ -12,10 +13,10 @@ function fetchDirectionsRequest(origin, destination) {
   };
 }
 
-function fetchDirectionsResponse(response) {
+function fetchDirectionsResponse(json) {
   return {
     type: DIRECTIONS_RESPONSE,
-    directions: response.json()
+    directions: json
   };
 }
 
@@ -26,39 +27,46 @@ function fetchDirectionsFailure(error) {
   };
 }
 
-export default function(origin, destination, arrivalTime) {
+export default function (options) {
   return function (dispatch) {
+    const {origin, destination, arrivalTime} = options;
+
     dispatch(fetchDirectionsRequest(origin, destination));
 
     const destinationParam = destination.latitude + ',' + destination.longitude;
     const originParam = origin.latitude + ',' + origin.longitude;
 
-    const currentDate = new Date();
-    if (arrivalTime.hour && arrivalTime.minute){
-      currentDate.setHours(arrivalTime.hour);
-      currentDate.setMinutes(arrivalTime.minute);
-    }
+    // closestStation.location will be the first destination for the first request
+    const closestStation = getClosestStation(origin.latitude, origin.longitude);
 
-    const arrivalTimeParam = currentDate.getTime();
+    // TODO
+    // Make a walking Directions request first, with closestStation as destination
+
+    //const currentDate = new Date();
+    //if (arrivalTime.hour && arrivalTime.minute){
+    //  currentDate.setHours(arrivalTime.hour);
+    //  currentDate.setMinutes(arrivalTime.minute);
+    //}
+
+    //const arrivalTimeParam = currentDate.getTime();
 
     // PARAMS for api
-    //   mode: we want this to be transit since its for trains
+    //   mode: we want this to be walking
     //   origin: latitude, longitude
     //   destination: string for path station
-    //   arrival_time: seconds since Jan 1 1970 UTC
 
-    const url = `https://maps.googleapis.com/maps/api/directions/json?
-      origin=${originParam}&
-      destination=${destinationParam}&
-      mode=walking&
-      key=${env.googleDirectionsAPI}`;
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originParam}&destination=${destinationParam}&mode=walking&key=${env.googleDirectionsAPI}`;
 
     return fetch(url)
       .then(function(response) {
         if (response.status >= 400) {
           throw new Error("Bad response from server");
         }
-        dispatch(fetchDirectionsResponse(response));
+        return response.json();
+      })
+      .then((json) => {
+        const action = fetchDirectionsResponse(json);
+        dispatch(action);
       })
       .catch(function(error) {
         dispatch(fetchDirectionsFailure(error));
