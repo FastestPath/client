@@ -21,7 +21,7 @@ dependencies {
     compile 'io.dropwizard:dropwizard-core:0.8.2'
     compile 'org.quartz-scheduler:quartz:2.1.0'
     compile 'com.hubspot.dropwizard:dropwizard-guice:0.8.1.1'
-    compile 'org.glassfish.jersey:project:2.19'
+    compile 'org.jsoup:jsoup:1.9.1'
     testCompile 'io.dropwizard:dropwizard-testing:0.8.2'
 }
 

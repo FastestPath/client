@@ -1,24 +1,20 @@
 package com.timetopath.pathtimer;
 
 import io.dropwizard.Configuration;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class PathTimerConfiguration extends Configuration {
+class PathTimerConfiguration extends Configuration {
 
   @NotEmpty
-  @JsonProperty
-  private String template;
+  private String environment;
 
-  @NotEmpty
-  @JsonProperty
-  private String defaultName = "Stranger";
+  private int fetchIntervalHours;
 
-  public String getTemplate() {
-                              return template;
-                                              }
+  public String getEnvironment() {
+    return environment;
+  }
 
-  public String getDefaultName() {
-        return defaultName;
-    }
+  public int getFetchIntervalHours() {
+    return fetchIntervalHours;
+  }
 }
