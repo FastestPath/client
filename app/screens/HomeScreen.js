@@ -70,15 +70,14 @@ const PathTimer = React.createClass({
   },
 
   showPicker: async function(options) {
-    const { presetHour, presetMinute } = this.state;
     try {
       const { action, minute, hour } = await TimePickerAndroid.open(options);
 
       if (action === TimePickerAndroid.timeSetAction) {
         return this.setState({
           text: formatHourMinute(hour, minute),
-          hour: presetHour,
-          minute: presetMinute
+          hour,
+          minute
         });
       }
 
@@ -101,10 +100,10 @@ const PathTimer = React.createClass({
 
     const positionJson = JSON.parse(currentPosition);
     const origin = positionJson.coords;
-    const destination = Station[selectedStation].location;
+    const destinationStation = Station[selectedStation];
     const time = { hour, minute };
 
-    this.props.fetchDirections({origin, destination, time});
+    this.props.fetchDirections({origin, destinationStation, time});
   },
 
   handleStationChange(value) {
@@ -146,7 +145,10 @@ const PathTimer = React.createClass({
         </Text>
 
         <Button
-          onPress={this.showPicker}
+          onPress={ () => this.showPicker({
+              hour: this.state.hour || this.state.presetHour,
+              minute: this.state.minute || this.state.presetMinute,
+            })}
         >
           {this.state.timePromptText}
         </Button>
@@ -175,6 +177,13 @@ const PathTimer = React.createClass({
             The closest path station is a {formatSeconds(directions.duration)} walk away.
           </Text>
         )}
+
+        { directions.timeToLeave && (
+          <Text style={styles.status}>
+            Leave at {formatSeconds(directions.timeToLeave)} to catch your train.
+          </Text>
+        )}
+
       </View>
     );
   }

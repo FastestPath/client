@@ -27,20 +27,43 @@ function fetchDirectionsFailure(error) {
   };
 }
 
-function createURLFromParams(options){
-  const {mode, origin, destination, arrivalTime} = options;
+function createGoogleURLFromParams(options){
+  const {mode, origin, destination} = options;
 
   const destinationParam = destination.latitude + ',' + destination.longitude;
   const originParam = origin.latitude + ',' + origin.longitude;
 
-  let url = `https://maps.googleapis.com/maps/api/directions/json?`
+  return `https://maps.googleapis.com/maps/api/directions/json?`
   +`origin=${originParam}`
   +`&destination=${destinationParam}`
   +`&mode=${mode}`
   +`&key=${env.googleDirectionsAPI}`;
+}
+
+function createPathURLFromParams(options){
+  const {duration, closestStation, destinationStation, arrivalTime} = options;
+
+  const destinationParam = destinationStation.name;
+  const originParam = closestStation.name;
+
+  const currentDate = new Date();
+
+  if (arrivalTime.hour && arrivalTime.minute){
+    currentDate.setHours(arrivalTime.hour);
+    currentDate.setMinutes(arrivalTime.minute);
+  }
+
+  const arrivalTimeParam = currentDate.getTime();
+
+  let url = `https://timetopath.com/api/schedule?`
+    +`origin=${originParam}`
+    +`&destination=${destinationParam}`
+    +`&walking_time=${duration}`
+    // will we need an API key?
+    //+`&key=${env.googleDirectionsAPI}`;
 
   if(arrivalTime){
-    url += `&arrival_time=${arrivalTime}`
+    url += `&arrival_time=${arrivalTimeParam}`
   }
 
   return url;
@@ -57,29 +80,40 @@ function calculateDuration(json){
   }
 }
 
+function fetchNextTrainTime(duration, closestStation, destinationStation, arrivalTime, dispatch) {
+
+  const url = createPathURLFromParams({duration, closestStation, destinationStation, arrivalTime});
+
+  fetch(url)
+    .then(function(response) {
+      if (response.status >= 400) {
+        throw new Error("Bad response from server");
+      }
+      return response.json();
+    })
+    .then((json) => {
+      const action = fetchDirectionsResponse({timeToLeave: json.timeToLeave});
+      dispatch(action);
+    })
+    .catch(function(error) {
+      dispatch(fetchDirectionsFailure(error));
+    })
+
+}
+
 export default function (options) {
   return function (dispatch) {
-    const {origin, destination, arrivalTime} = options;
+    const {origin, destinationStation, arrivalTime} = options;
 
-    dispatch(fetchDirectionsRequest(origin, destination));
+    dispatch(fetchDirectionsRequest(origin, destinationStation));
 
-    // closestStation.location will be the first destination for the first request
     const closestStation = getClosestStation(origin.latitude, origin.longitude);
 
-    let url = createURLFromParams({origin, destination:closestStation.location, mode: 'walking'});
-
-    //const currentDate = new Date();
-    //if (arrivalTime.hour && arrivalTime.minute){
-    //  currentDate.setHours(arrivalTime.hour);
-    //  currentDate.setMinutes(arrivalTime.minute);
-    //}
-    //
-    //const arrivalTimeParam = currentDate.getTime();
-
-    // PARAMS for api
+    // PARAMS for Google api
     //   mode: we want this to be walking
     //   origin: latitude, longitude
     //   destination: string for path station
+    const url = createGoogleURLFromParams({origin, destination:closestStation.location, mode: 'walking'});
 
     return fetch(url)
       .then(function(response) {
@@ -90,6 +124,9 @@ export default function (options) {
       })
       .then((json) => {
         const duration = calculateDuration(json);
+
+        // uncomment this once the API is ready
+        //fetchNextTrainTime(duration, closestStation, destinationStation, arrivalTime, dispatch);
 
         const action = fetchDirectionsResponse({duration});
         dispatch(action);
