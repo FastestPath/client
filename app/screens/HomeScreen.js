@@ -10,6 +10,7 @@ import Button from 'react-native-button';
 import Station from '../constants/Station';
 import StationPicker from '../components/StationPicker';
 import formatHourMinute from '../utils/formatHourMinute';
+import formatSeconds from '../utils/formatSeconds';
 
 const styles = StyleSheet.create({
   container: {
@@ -169,9 +170,9 @@ const PathTimer = React.createClass({
           Get ETA
         </Button>
 
-        { directions.status && (
+        { directions.duration && (
           <Text style={styles.status}>
-            Status of API response directions object: {directions.status}
+            The closest path station is a {formatSeconds(directions.duration)} walk away.
           </Text>
         )}
       </View>

@@ -27,35 +27,59 @@ function fetchDirectionsFailure(error) {
   };
 }
 
+function createURLFromParams(options){
+  const {mode, origin, destination, arrivalTime} = options;
+
+  const destinationParam = destination.latitude + ',' + destination.longitude;
+  const originParam = origin.latitude + ',' + origin.longitude;
+
+  let url = `https://maps.googleapis.com/maps/api/directions/json?`
+  +`origin=${originParam}`
+  +`&destination=${destinationParam}`
+  +`&mode=${mode}`
+  +`&key=${env.googleDirectionsAPI}`;
+
+  if(arrivalTime){
+    url += `&arrival_time=${arrivalTime}`
+  }
+
+  return url;
+}
+
+function calculateDuration(json){
+  if (json.routes.length){
+    return json.routes[0].legs.reduce((prev, next)=>{
+      return prev + next.duration.value;
+    }, 0)
+  } else {
+    //no routes available
+    return null;
+  }
+}
+
 export default function (options) {
   return function (dispatch) {
     const {origin, destination, arrivalTime} = options;
 
     dispatch(fetchDirectionsRequest(origin, destination));
 
-    const destinationParam = destination.latitude + ',' + destination.longitude;
-    const originParam = origin.latitude + ',' + origin.longitude;
-
     // closestStation.location will be the first destination for the first request
     const closestStation = getClosestStation(origin.latitude, origin.longitude);
 
-    // TODO
-    // Make a walking Directions request first, with closestStation as destination
+    let url = createURLFromParams({origin, destination:closestStation.location, mode: 'walking'});
 
     //const currentDate = new Date();
     //if (arrivalTime.hour && arrivalTime.minute){
     //  currentDate.setHours(arrivalTime.hour);
     //  currentDate.setMinutes(arrivalTime.minute);
     //}
-
+    //
     //const arrivalTimeParam = currentDate.getTime();
 
     // PARAMS for api
     //   mode: we want this to be walking
     //   origin: latitude, longitude
     //   destination: string for path station
-
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originParam}&destination=${destinationParam}&mode=walking&key=${env.googleDirectionsAPI}`;
 
     return fetch(url)
       .then(function(response) {
@@ -65,7 +89,9 @@ export default function (options) {
         return response.json();
       })
       .then((json) => {
-        const action = fetchDirectionsResponse(json);
+        const duration = calculateDuration(json);
+
+        const action = fetchDirectionsResponse({duration});
         dispatch(action);
       })
       .catch(function(error) {
