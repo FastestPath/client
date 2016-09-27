@@ -6,10 +6,6 @@ apply plugin: 'com.github.johnrengelman.shadow'
 version = '1.0'
 mainClassName = 'com.timetopath.pathtimer'
 
-ext {
-    generatedDir = file('src/main/resources/schedules')
-}
-
 repositories {
     mavenCentral()
 }
@@ -23,6 +19,7 @@ dependencies {
     compile 'com.hubspot.dropwizard:dropwizard-guice:0.8.1.1'
     compile 'org.jsoup:jsoup:1.9.1'
     testCompile 'io.dropwizard:dropwizard-testing:0.8.2'
+    compile 'net.lingala.zip4j:zip4j:1.2.9'
 }
 
 run {

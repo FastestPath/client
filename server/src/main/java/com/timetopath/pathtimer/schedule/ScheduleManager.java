@@ -10,13 +10,13 @@ import javax.inject.Singleton;
 @Singleton
 public class ScheduleManager {
 
-	final Logger LOG = LoggerFactory.getLogger(ScheduleManager.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ScheduleManager.class);
 
   private final ScheduleFetcher fetcher;
 
 	private final Scheduler scheduler;
 
-	private Schedule schedule;
+	private Schedule schedule; // storing the latest schedule in memory for now
 
 	@Inject
 	public ScheduleManager(ScheduleFetcher fetcher, Scheduler scheduler) {
@@ -25,10 +25,17 @@ public class ScheduleManager {
 	}
 
 	public void start() {
-    fetcher.fetch();
+		try {
+			this.schedule = fetcher.fetch();
+		} catch (ScheduleFetcherException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Schedule getSchedule() {
+		return schedule;
 	}
 
 	public void stop() {
-
 	}
 }
