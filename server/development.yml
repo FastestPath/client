@@ -1,0 +1,11 @@
+environment: development
+server:
+  type: simple
+  rootPath: /api/*
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 9000
+logging:
+  level: INFO
