@@ -1,5 +1,6 @@
 import env from '../../env';
 import getClosestStation from '../utils/computeDistance';
+import PushNotification from '../utils/pushNotification';
 
 export const DIRECTIONS_REQUEST = 'DIRECTIONS_REQUEST';
 export const DIRECTIONS_RESPONSE = 'DIRECTIONS_RESPONSE';
@@ -124,6 +125,11 @@ export default function (options) {
       })
       .then((json) => {
         const duration = calculateDuration(json);
+
+        PushNotification.localNotificationSchedule({
+          message: "Its time to leave for your train!!",
+          date: new Date(Date.now() + (2 * 1000)) // in 2 secs
+        });
 
         // uncomment this once the API is ready
         //fetchNextTrainTime(duration, closestStation, destinationStation, arrivalTime, dispatch);
