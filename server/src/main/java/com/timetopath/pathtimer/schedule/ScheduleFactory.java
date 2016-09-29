@@ -1,36 +1,71 @@
 package com.timetopath.pathtimer.schedule;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.timetopath.pathtimer.schedule.models.*;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.List;
+
+@Singleton
 class ScheduleFactory {
 
-  public static Schedule createFromCSV(Path zipPath) throws IOException {
-    List<Trip> trips = Files.lines(zipPath)
-        .map(ScheduleFactory::addTrip)
-        .collect(Collectors.toList());
+  private static final CsvSchema SCHEMA = CsvSchema.emptySchema().withHeader().withColumnSeparator(',');
 
-    return new Schedule(trips);
+  private final CsvMapper mapper;
+
+  private final StationGrouper stationGrouper;
+
+  private final SequenceJoiner sequenceJoiner;
+
+  @Inject
+  public ScheduleFactory(CsvMapper mapper, StationGrouper stationGrouper, SequenceJoiner sequenceJoiner) {
+    this.mapper = mapper;
+    this.stationGrouper = stationGrouper;
+    this.sequenceJoiner = sequenceJoiner;
   }
 
-  private static Trip addTrip(String line) {
-    List<String> components = Arrays.asList(line.split(","));
-    Trip trip = new Trip();
-    trip.setTripId(components.get(0));
-    trip.setArrivalTime(components.get(1));
-    trip.setDepartureTime(components.get(2));
-    trip.setStopId(components.get(3));
-    trip.setStopSequence(components.get(4));
-    trip.setStopHeadSign(components.get(5));
-    trip.setPickupType(components.get(6));
-    trip.setDropOffType(components.get(7));
-    trip.setShapeDistTraveled(components.get(8));
-    return trip;
+  public Schedule createFromCSV(Path stopIds, Path stopTimes) throws IOException {
+    List<Stop> stops = readStops(stopIds);
+    List<Arrival> arrivals = readTrips(stopTimes);
+
+    List<Station> stations = stationGrouper.groupByStation(stops);
+    List<Sequence> sequences = sequenceJoiner.joinArrivals(arrivals, stations);
+
+    Multimap<String, Sequence> departureMap = createDepartureMap(sequences);
+
+    return null;
   }
 
-  private ScheduleFactory() {}
+  private Multimap<String, Sequence> createDepartureMap(List<Sequence> sequences) {
+    Multimap<String, Sequence> departureMap = LinkedListMultimap.create();
+    sequences.forEach((sequence) -> {
+      LinkedList<Arrival> sequenceArrivals = sequence.getArrivals();
+      while (sequenceArrivals.size() > 1) {
+        Arrival arrival = sequenceArrivals.peek();
+        LinkedList<Arrival> arrivalsClone = new LinkedList<>(sequenceArrivals);
+        departureMap.put(arrival.getStation().getName(), new Sequence(arrivalsClone));
+        sequenceArrivals.pop();
+      }
+    });
+    return departureMap;
+  }
+
+  private List<Stop> readStops(Path stopIds) throws IOException {
+    MappingIterator<Stop> iterator = mapper.reader(Stop.class).with(SCHEMA).readValues(stopIds.toFile());
+    return Lists.newArrayList(iterator);
+  }
+
+  private List<Arrival> readTrips(Path stopTimes) throws IOException {
+    MappingIterator<Arrival> iterator = mapper.reader(Arrival.class).with(SCHEMA).readValues(stopTimes.toFile());
+    return Lists.newArrayList(iterator);
+  }
 }

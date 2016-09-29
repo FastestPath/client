@@ -1,6 +1,7 @@
 package com.timetopath.pathtimer.schedule;
 
 import com.codahale.metrics.annotation.Timed;
+import com.timetopath.pathtimer.schedule.models.Schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 public class ScheduleResource {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScheduleResource.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ScheduleResource.class);
 
   private final ScheduleManager scheduleManager;
 

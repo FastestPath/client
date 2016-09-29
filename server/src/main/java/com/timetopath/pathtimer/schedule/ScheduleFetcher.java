@@ -1,5 +1,6 @@
 package com.timetopath.pathtimer.schedule;
 
+import com.timetopath.pathtimer.schedule.models.Schedule;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.jsoup.Jsoup;
@@ -8,6 +9,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -32,15 +34,24 @@ class ScheduleFetcher {
   private static final String RESOURCES = "src/main/resources";
   private static final String PATH_DIRECTORY = "http://data.trilliumtransit.com/gtfs/path-nj-us/";
   private static final String ZIP_FILENAME = "path-nj-us.zip";
+  private static final String STOP_IDS = "stops.txt";
   private static final String STOP_TIMES = "stop_times.txt";
   private static final String ELEMENT_SELECTOR = "tr > td:eq(2)";
 
   private static final Path ZIP_PATH = Paths.get(RESOURCES + "/" + ZIP_FILENAME);
-  private static final Path CSV_PATH = Paths.get(RESOURCES + "/" + STOP_TIMES);
+  private static final Path CSV_STOP_IDS = Paths.get(RESOURCES + "/" + STOP_IDS);
+  private static final Path CSV_STOP_TIMES = Paths.get(RESOURCES + "/" + STOP_TIMES);
 
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd mm:ss", Locale.ENGLISH);
 
   private static final URL ZIP_URL = createUrl();
+
+  private final ScheduleFactory scheduleFactory;
+
+  @Inject
+  public ScheduleFetcher(ScheduleFactory scheduleFactory) {
+    this.scheduleFactory = scheduleFactory;
+  }
 
   public Schedule fetch() throws ScheduleFetcherException {
 
@@ -60,6 +71,7 @@ class ScheduleFetcher {
 
     try {
       ZipFile zipFile = new ZipFile(ZIP_PATH.toString());
+      zipFile.extractFile(STOP_IDS, RESOURCES);
       zipFile.extractFile(STOP_TIMES, RESOURCES);
     } catch (ZipException e) {
       throw new ScheduleFetcherException("Failed to unzip stop times.", e);
@@ -74,8 +86,9 @@ class ScheduleFetcher {
 
     Schedule schedule;
     try {
-      schedule = ScheduleFactory.createFromCSV(CSV_PATH);
-      Files.delete(CSV_PATH);
+      schedule = scheduleFactory.createFromCSV(CSV_STOP_IDS, CSV_STOP_TIMES);
+      Files.delete(CSV_STOP_IDS);
+      Files.delete(CSV_STOP_TIMES);
     } catch (IOException e) {
       throw new ScheduleFetcherException("Failed to read csv.", e);
     }

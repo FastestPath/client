@@ -1,5 +1,6 @@
 package com.timetopath.pathtimer.schedule;
 
+import com.timetopath.pathtimer.schedule.models.Schedule;
 import org.quartz.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
