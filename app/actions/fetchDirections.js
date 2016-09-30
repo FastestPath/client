@@ -126,15 +126,17 @@ export default function (options) {
       .then((json) => {
         const duration = calculateDuration(json);
 
+        //TODO update to real eta when ready
         PushNotification.localNotificationSchedule({
           message: "Its time to leave for your train!!",
           date: new Date(Date.now() + (2 * 1000)) // in 2 secs
         });
 
-        // uncomment this once the API is ready
+        // TODO uncomment this once the API is ready
         //fetchNextTrainTime(duration, closestStation, destinationStation, arrivalTime, dispatch);
 
-        const action = fetchDirectionsResponse({duration});
+        //TODO dont dispatch here, and dont pass back timeToLeave, its for testing atm
+        const action = fetchDirectionsResponse({duration, timeToLeave:duration});
         dispatch(action);
       })
       .catch(function(error) {

@@ -12,7 +12,7 @@ function renderStationItems() {
 
 const styles = StyleSheet.create({
   container: {
-    width: 100
+    width: 200
   }
 });
 
@@ -33,13 +33,14 @@ const StationPicker = React.createClass({
   },
 
   render() {
-    const { selectedValue, defaultText } = this.props;
+    const { selectedValue, defaultValue } = this.props;
+
     return (
       <Picker
         style={styles.container}
-        selectedValue={selectedValue || defaultText}
+        selectedValue={selectedValue}
         onValueChange={this.props.onValueChange}
-        mode='dropdown'
+        prompt={defaultValue}
       >
         { renderStationItems() }
       </Picker>

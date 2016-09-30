@@ -22,24 +22,19 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    margin: 40,
   },
   instructions: {
     textAlign: 'center',
     color: '#333333',
     marginBottom: 30,
   },
-  status: {
-    textAlign: 'center',
-    color: '#333333',
-    marginTop: 30,
+  button: {
+    marginBottom:30
   },
-  text: {
-    color: 'black',
-  },
-  title: {
-    fontWeight: '500',
-  },
+  picker: {
+    marginBottom:30
+  }
 });
 
 const PathTimer = React.createClass({
@@ -48,13 +43,14 @@ const PathTimer = React.createClass({
 
   getInitialState() {
     return {
-      currentPosition: 'unknown',
+      currentPosition: null,
       hour: null,
       minute: null,
       presetHour: 12,
       presetMinute: 0,
       selectedStation: null,
-      timePromptText: 'Click to pick the time you\'d like to arrive'
+      timePromptText: 'Time of arrival (optional)',
+      stationPromptText: 'Please select your destination'
     };
   },
 
@@ -75,14 +71,14 @@ const PathTimer = React.createClass({
 
       if (action === TimePickerAndroid.timeSetAction) {
         return this.setState({
-          text: formatHourMinute(hour, minute),
+          timeText: formatHourMinute(hour, minute),
           hour,
           minute
         });
       }
 
       if (action === TimePickerAndroid.dismissedAction) {
-        return this.setState({ text: 'dismissed' });
+        return this.setState({ timeText: 'dismissed' });
       }
 
     } catch ({code, message}) {
@@ -98,8 +94,19 @@ const PathTimer = React.createClass({
       minute
     } = this.state;
 
-    const positionJson = JSON.parse(currentPosition);
-    const origin = positionJson.coords;
+    let origin = null;
+
+    if (currentPosition){
+      const positionJson = JSON.parse(currentPosition);
+      origin = positionJson.coords;
+    } else {
+      // TODO this is for testing, remove when done, handle error when location not found
+      origin = {
+          latitude: 40.735,
+          longitude: -74.027
+      }
+    }
+
     const destinationStation = Station[selectedStation];
     const time = { hour, minute };
 
@@ -110,79 +117,76 @@ const PathTimer = React.createClass({
     this.setState({ selectedStation: value });
   },
 
-  renderInstructions() {
+  departText(){
     const {
       hour,
       minute,
-      presetHour,
-      presetMinute,
-      selectedStation
+      timeText
     } = this.state;
 
-    const stationName = Station[selectedStation].name;
-    const arrivalTime = formatHourMinute(hour || presetHour,
-      minute || presetMinute);
+    if (hour && minute){
+      return 'Leave at ' + timeText;
+    } else {
+      return 'Leave ASAP'
+    }
+  },
+
+  renderTimer() {
+    const directions = this.props.directions;
+
+
 
     return (
-      <Text style={styles.instructions}>
-        You want to arrive at {stationName} station at {arrivalTime}
-      </Text>
+      <View>
+        <Button>
+          Cancel
+        </Button>
+        <Text style={styles.instructions}>
+          Leave in {directions.timeToLeave} to catch your train
+        </Text>
+      </View>
     );
   },
 
   render() {
     const directions = this.props.directions;
-    const { selectedStation } = this.state;
+
+    const { selectedStation, stationPromptText } = this.state;
 
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Welcome to PATH timer!
+          PATH Timer
         </Text>
-        <Text style={styles.instructions}>
-          Select which station you'd like to arrive at,
-          and what time you'd like to be there.
+
+        <Text>
+          Please select your destination
         </Text>
+
+        <StationPicker
+          style={styles.picker}
+          defaultValue={stationPromptText}
+          selectedValue={selectedStation}
+          onValueChange={this.handleStationChange}
+        />
 
         <Button
           onPress={ () => this.showPicker({
               hour: this.state.hour || this.state.presetHour,
               minute: this.state.minute || this.state.presetMinute,
             })}
+          style={styles.button}
         >
           {this.state.timePromptText}
         </Button>
 
-        <StationPicker
-          defaultText='Select the PATH station you want to get off at'
-          selectedValue={selectedStation}
-          onValueChange={this.handleStationChange}
-        />
-
-        { selectedStation && this.renderInstructions() }
-
-        <Text>
-          <Text style={styles.title}>Current position: </Text>
-          {this.state.currentPosition}
-        </Text>
-
         <Button
           onPress={this.handleSubmit}
         >
-          Get ETA
+          {this.departText()}
         </Button>
 
-        { directions.duration && (
-          <Text style={styles.status}>
-            The closest path station is a {formatSeconds(directions.duration)} walk away.
-          </Text>
-        )}
-
-        { directions.timeToLeave && (
-          <Text style={styles.status}>
-            Leave at {formatSeconds(directions.timeToLeave)} to catch your train.
-          </Text>
-        )}
+        { directions.timeToLeave && this.renderTimer() }
 
       </View>
     );
