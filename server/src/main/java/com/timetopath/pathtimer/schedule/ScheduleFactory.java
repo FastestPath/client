@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ class ScheduleFactory {
 
     Multimap<String, Sequence> departureMap = createDepartureMap(sequences);
 
-    return null;
+    return new Schedule(departureMap, Instant.now());
   }
 
   private Multimap<String, Sequence> createDepartureMap(List<Sequence> sequences) {

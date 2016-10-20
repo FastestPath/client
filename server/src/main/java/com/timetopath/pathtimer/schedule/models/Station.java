@@ -1,11 +1,14 @@
 package com.timetopath.pathtimer.schedule.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Map;
 
 public class Station {
 
   private final String name;
 
+  @JsonIgnore
   private final Map<String, Stop> stopIdMap;
 
   private Station(Builder builder) {

@@ -2,6 +2,7 @@ package com.timetopath.pathtimer;
 
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser.Feature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
@@ -33,6 +34,7 @@ class PathTimerModule extends AbstractModule {
         .toProvider(SchedulerProvider.class)
         .in(Singleton.class);
 
+    CSV_MAPPER.registerModule(new JavaTimeModule());
     CSV_MAPPER.enable(Feature.WRAP_AS_ARRAY);
     bind(CsvMapper.class).toInstance(CSV_MAPPER);
   }

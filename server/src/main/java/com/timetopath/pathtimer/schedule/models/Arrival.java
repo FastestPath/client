@@ -1,27 +1,38 @@
 package com.timetopath.pathtimer.schedule.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.timetopath.pathtimer.schedule.models.Arrival.Builder;
+import org.joda.time.DateTime;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @JsonDeserialize(builder = Builder.class)
 public class Arrival {
 
   private final String tripId;
 
-  private final String arrivalTime;
+  private final Instant arrivalTime;
 
-  private final String departureTime;
+  private final Instant departureTime;
 
   private final String stopId;
 
   private final String stopSequence;
 
+  @JsonIgnore
   private final String stopHeadSign;
 
+  @JsonIgnore
   private final String pickupType;
 
+  @JsonIgnore
   private final String dropOffType;
 
   private final String shapeDistTraveled;
@@ -44,11 +55,11 @@ public class Arrival {
     return tripId;
   }
 
-  public String getArrivalTime() {
+  public Instant getArrivalTime() {
     return arrivalTime;
   }
 
-  public String getDepartureTime() {
+  public Instant getDepartureTime() {
     return departureTime;
   }
 
@@ -87,14 +98,17 @@ public class Arrival {
   @JsonPOJOBuilder(withPrefix = "")
   public static final class Builder {
 
+    @JsonIgnore
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+
     @JsonProperty("trip_id")
     private String tripId;
 
     @JsonProperty("arrival_time")
-    private String arrivalTime;
+    private Instant arrivalTime;
 
     @JsonProperty("departure_time")
-    private String departureTime;
+    private Instant departureTime;
 
     @JsonProperty("stop_id")
     private String stopId;
@@ -114,6 +128,22 @@ public class Arrival {
     @JsonProperty("shape_dist_traveled")
     private String shapeDistTraveled;
 
+    private static Instant timestampToInstant(String timestamp) {
+      Date hms;
+      try {
+        hms = DATE_FORMAT.parse(timestamp);
+      } catch (ParseException e) {
+        throw new RuntimeException("Unable to parse timestamp, " + timestamp, e);
+      }
+
+      Date startOfDay = new DateTime().withTimeAtStartOfDay().toDate();
+
+      return startOfDay.toInstant()
+          .plus(hms.getHours(), ChronoUnit.HOURS)
+          .plus(hms.getMinutes(), ChronoUnit.MINUTES)
+          .plus(hms.getSeconds(), ChronoUnit.SECONDS);
+    }
+
     public Builder() {
     }
 
@@ -123,12 +153,12 @@ public class Arrival {
     }
 
     public Builder arrivalTime(String val) {
-      arrivalTime = val;
+      arrivalTime = timestampToInstant(val);
       return this;
     }
 
     public Builder departureTime(String val) {
-      departureTime = val;
+      departureTime = timestampToInstant(val);
       return this;
     }
 

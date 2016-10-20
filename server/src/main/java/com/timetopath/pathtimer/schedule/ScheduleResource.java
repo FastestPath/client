@@ -1,9 +1,6 @@
 package com.timetopath.pathtimer.schedule;
 
-import com.codahale.metrics.annotation.Timed;
-import com.timetopath.pathtimer.schedule.models.Schedule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.timetopath.pathtimer.schedule.models.StationName;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -11,12 +8,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.time.Instant;
 
 @Path("/schedule")
 @Produces(MediaType.APPLICATION_JSON)
 public class ScheduleResource {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ScheduleResource.class);
 
   private final ScheduleManager scheduleManager;
 
@@ -26,8 +23,10 @@ public class ScheduleResource {
   }
 
   @GET
-  @Timed
-  public Schedule getSchedule(@QueryParam("from") String from, @QueryParam("to") String to) {
-    return scheduleManager.getSchedule();
+  public Response getSchedule(@QueryParam("from") StationName from, @QueryParam("to") StationName to,
+      @QueryParam("departAt") String departAt) {
+    return Response.ok()
+        .entity(scheduleManager.getDeparture(from, to, Instant.parse(departAt)))
+        .build();
   }
 }

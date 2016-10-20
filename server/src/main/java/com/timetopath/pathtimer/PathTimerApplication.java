@@ -1,16 +1,16 @@
 package com.timetopath.pathtimer;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hubspot.dropwizard.guice.GuiceBundle;
-import com.timetopath.pathtimer.jackson.InstantSerializer;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-
-import java.time.Instant;
 
 public class PathTimerApplication extends Application<PathTimerConfiguration> {
 
@@ -33,10 +33,11 @@ public class PathTimerApplication extends Application<PathTimerConfiguration> {
   @Override
   public void run(PathTimerConfiguration configuration, Environment environment) throws Exception {
 		SimpleModule module = new SimpleModule("PathTimerModule", new Version(1, 0, 0, null, null, null));
-    module.addSerializer(Instant.class, new InstantSerializer());
-
     ObjectMapper mapper = environment.getObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		mapper.registerModule(module);
+    mapper.registerModule(new JavaTimeModule());
   }
 }
