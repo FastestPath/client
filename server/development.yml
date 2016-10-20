@@ -8,5 +8,5 @@ server:
     type: http
     port: 9000
 logging:
-  level: INFO
+  level: DEBUG
 fetchIntervalHours: 12

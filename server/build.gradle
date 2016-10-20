@@ -20,6 +20,8 @@ dependencies {
     compile 'org.jsoup:jsoup:1.9.1'
     testCompile 'io.dropwizard:dropwizard-testing:0.8.2'
     compile 'net.lingala.zip4j:zip4j:1.2.9'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.8.1'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.0'
 }
 
 run {
@@ -68,7 +70,3 @@ jar {
 // override jar task with shadowJar
 tasks.jar.enabled = false
 assemble.dependsOn(shadowJar)
-
-clean {
-    delete generatedDir
-}
