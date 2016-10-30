@@ -4,7 +4,7 @@ apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 version = '1.0'
-mainClassName = 'com.timetopath.pathtimer'
+mainClassName = 'com.timetopath.pathtimer.PathTimerApplication'
 
 repositories {
     mavenCentral()

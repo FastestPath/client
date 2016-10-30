@@ -22,21 +22,47 @@ public class ScheduleManager {
 
 	private Schedule schedule; // storing the latest schedule in memory for now
 
+  private boolean isFetching;
+
 	@Inject
 	public ScheduleManager(ScheduleFetcher fetcher) {
 		this.fetcher = fetcher;
 	}
 
 	public void start() {
+    LOG.info("Starting scheduler...");
+    this.isFetching = true;
 		try {
-			this.schedule = fetcher.fetch();
+      this.schedule = fetcher.fetch().get();
 		} catch (ScheduleFetcherException e) {
-      throw new RuntimeException("Unable to fetch schedule.", e);
-		}
+      LOG.error("Unable to fetch schedule.", e);
+		} finally {
+      this.isFetching = false;
+    }
 	}
 
-  public void stop() {
+	public void fetchLatest() {
+    if (isFetching) {
+      LOG.info("Unable to fetch schedule, a fetch is already in progress.");
+      return;
+    }
 
+    this.isFetching = true;
+    Instant currentModifiedOn = schedule == null ? null : schedule.getModifiedOn();
+    Optional<Schedule> latest;
+    try {
+      latest = fetcher.fetch(currentModifiedOn);
+    } catch (ScheduleFetcherException e) {
+      LOG.error("Unable to fetch schedule.", e);
+      return;
+    } finally {
+      this.isFetching = false;
+    }
+
+    // latest will be empty if up-to-date
+    if (latest.isPresent()) {
+      this.schedule = latest.get();
+    }
   }
 
   public Departure getDeparture(StationName from, StationName to, Instant departAt) {

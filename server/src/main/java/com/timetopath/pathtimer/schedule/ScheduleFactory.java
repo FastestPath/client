@@ -34,7 +34,7 @@ class ScheduleFactory {
     this.sequenceJoiner = sequenceJoiner;
   }
 
-  public Schedule createFromCSV(Path stopIds, Path stopTimes) throws IOException {
+  public Schedule createFromCSV(Path stopIds, Path stopTimes, Instant modifiedOn) throws IOException {
     List<Stop> stops = readStops(stopIds);
     List<Arrival> arrivals = readTrips(stopTimes);
 
@@ -43,7 +43,7 @@ class ScheduleFactory {
 
     Multimap<String, Sequence> departureMap = createDepartureMap(sequences);
 
-    return new Schedule(departureMap, Instant.now());
+    return new Schedule(departureMap, modifiedOn);
   }
 
   private Multimap<String, Sequence> createDepartureMap(List<Sequence> sequences) {

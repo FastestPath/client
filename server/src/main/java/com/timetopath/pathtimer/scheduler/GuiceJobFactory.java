@@ -10,12 +10,12 @@ import org.quartz.spi.TriggerFiredBundle;
 
 import javax.inject.Inject;
 
-class ScheduledJobFactory implements JobFactory {
+class GuiceJobFactory implements JobFactory {
 
   private final Injector guice;
 
   @Inject
-  public ScheduledJobFactory(Injector guice) {
+  public GuiceJobFactory(Injector guice) {
     this.guice = guice;
   }
 

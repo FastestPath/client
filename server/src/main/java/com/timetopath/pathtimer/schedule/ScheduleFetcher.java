@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Locale;
+import java.util.Optional;
 
 @Singleton
 class ScheduleFetcher {
@@ -53,8 +54,21 @@ class ScheduleFetcher {
     this.scheduleFactory = scheduleFactory;
   }
 
-  public Schedule fetch() throws ScheduleFetcherException {
+  public Optional<Schedule> fetch() throws ScheduleFetcherException {
+    return fetch(null);
+  }
 
+  public Optional<Schedule> fetch(Instant currentModifiedOn) throws ScheduleFetcherException {
+    LOG.info("Fetching schedule modifiedOn date...");
+    Instant modifiedOn = fetchModifiedOn();
+    LOG.info("Schedule last updated {}.", modifiedOn);
+
+    if (currentModifiedOn != null && !modifiedOn.isAfter(currentModifiedOn)) {
+      LOG.info("Schedule is already update to date.");
+      return Optional.empty();
+    }
+
+    LOG.info("Fetching schedule...");
     try {
       HttpURLConnection connection = (HttpURLConnection) ZIP_URL.openConnection();
       int responseCode = connection.getResponseCode();
@@ -83,20 +97,20 @@ class ScheduleFetcher {
       throw new ScheduleFetcherException("Failed to delete zip.", e);
     }
 
-
     Schedule schedule;
     try {
-      schedule = scheduleFactory.createFromCSV(CSV_STOP_IDS, CSV_STOP_TIMES);
+      schedule = scheduleFactory.createFromCSV(CSV_STOP_IDS, CSV_STOP_TIMES, modifiedOn);
       Files.delete(CSV_STOP_IDS);
       Files.delete(CSV_STOP_TIMES);
     } catch (IOException e) {
       throw new ScheduleFetcherException("Failed to read csv.", e);
     }
 
-    return schedule;
+    LOG.info("Successfully fetched latest schedule.");
+    return Optional.of(schedule);
   }
 
-  private static Instant fetchModifiedOn() throws ScheduleFetcherException {
+  public static Instant fetchModifiedOn() throws ScheduleFetcherException {
     Document document;
     try {
       document = Jsoup.connect(PATH_DIRECTORY).get();

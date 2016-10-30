@@ -9,6 +9,14 @@ Displays what time you need to leave to make the PATH on time.
  - Launch the packager via `npm start`
  - Start the emulator and run `react-native run-android` to push the app to the emulator
 
+## Development Server
+To start the development server:
+
+```
+cd server/
+./gradlew run
+```
+
 ## Fetching Schedule Information
 To fetch a schedule, follow the template below:
 

@@ -15,10 +15,10 @@ public class SchedulerProvider implements Provider<Scheduler> {
 
   private final SchedulerFactory schedulerFactory;
 
-  private final ScheduledJobFactory jobFactory;
+  private final GuiceJobFactory jobFactory;
 
   @Inject
-  public SchedulerProvider(SchedulerFactory schedulerFactory, ScheduledJobFactory jobFactory) {
+  public SchedulerProvider(SchedulerFactory schedulerFactory, GuiceJobFactory jobFactory) {
     this.schedulerFactory = schedulerFactory;
     this.jobFactory = jobFactory;
   }
