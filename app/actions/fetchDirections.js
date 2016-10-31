@@ -42,31 +42,18 @@ function createGoogleURLFromParams(options){
 }
 
 function createPathURLFromParams(options){
-  const {duration, closestStation, destinationStation, arrivalTime} = options;
+  const {closestStation, destinationStation, departureTime} = options;
 
-  const destinationParam = destinationStation.name;
-  const originParam = closestStation.name;
+  const destinationParam = destinationStation.value;
+  const originParam = closestStation.value;
 
-  const currentDate = new Date();
+  //TODO Change this url when the server is live
+  let url = `http://192.168.1.153:9000/api/schedule?`
+    +`from=${originParam}`
+    +`&to=${destinationParam}`
+    +`&departAt=${departureTime}`
 
-  if (arrivalTime.hour && arrivalTime.minute){
-    currentDate.setHours(arrivalTime.hour);
-    currentDate.setMinutes(arrivalTime.minute);
-  }
-
-  const arrivalTimeParam = currentDate.getTime();
-
-  let url = `https://timetopath.com/api/schedule?`
-    +`origin=${originParam}`
-    +`&destination=${destinationParam}`
-    +`&walking_time=${duration}`
-    // will we need an API key?
-    //+`&key=${env.googleDirectionsAPI}`;
-
-  if(arrivalTime){
-    url += `&arrival_time=${arrivalTimeParam}`
-  }
-
+  console.log(url);
   return url;
 }
 
@@ -81,11 +68,32 @@ function calculateDuration(json){
   }
 }
 
-function fetchNextTrainTime(duration, closestStation, destinationStation, arrivalTime, dispatch) {
+function calculateDepartureTime(walkingDuration, desiredDepartureTime){
+  const currentDate = new Date();
 
-  const url = createPathURLFromParams({duration, closestStation, destinationStation, arrivalTime});
+  if (desiredDepartureTime && desiredDepartureTime.hour && desiredDepartureTime.minute){
+    currentDate.setHours(desiredDepartureTime.hour);
+    currentDate.setMinutes(desiredDepartureTime.minute);
+  }
 
-  fetch(url)
+  // Add the walking trip time to the departure time
+  currentDate.setSeconds(currentDate.getSeconds() + walkingDuration);
+  return currentDate.toISOString();
+}
+
+function calculateSecondsToDeparture(trainDepartureTime,walkingDuration){
+  let currentDate = new Date();
+  let trainDepartureDate = new Date(trainDepartureTime);
+
+  return (trainDepartureDate.getTime() - currentDate.getTime() - walkingDuration);
+}
+
+function fetchNextTrainTime(closestStation, destinationStation, departureTime, trainScheduleCallback) {
+
+  const url = createPathURLFromParams({closestStation, destinationStation, departureTime});
+
+  return fetch(url)
+  //return fetch('http://192.168.1.153:9000/api/schedule?from=WORLD_TRADE_CENTER&to=JOURNAL_SQUARE&departAt=2016-10-31T23:03:27.845Z')
     .then(function(response) {
       if (response.status >= 400) {
         throw new Error("Bad response from server");
@@ -93,18 +101,17 @@ function fetchNextTrainTime(duration, closestStation, destinationStation, arriva
       return response.json();
     })
     .then((json) => {
-      const action = fetchDirectionsResponse({timeToLeave: json.timeToLeave});
-      dispatch(action);
+      trainScheduleCallback(json);
     })
     .catch(function(error) {
-      dispatch(fetchDirectionsFailure(error));
+      trainScheduleCallback({error});
     })
 
 }
 
 export default function (options) {
   return function (dispatch) {
-    const {origin, destinationStation, arrivalTime} = options;
+    const {origin, destinationStation, departureTime} = options;
 
     dispatch(fetchDirectionsRequest(origin, destinationStation));
 
@@ -124,22 +131,31 @@ export default function (options) {
         return response.json();
       })
       .then((json) => {
-        const duration = calculateDuration(json);
+        const walkingDuration = calculateDuration(json);
 
-        //TODO update to real eta when ready
-        PushNotification.localNotificationSchedule({
-          message: "Its time to leave for your train!!",
-          date: new Date(Date.now() + (2 * 1000)) // in 2 secs
-        });
+        //PushNotification.localNotificationSchedule({
+        //  message: "Its time to leave for your train!!",
+        //  date: new Date(Date.now() + (2 * 1000)) // in 2 secs
+        //});
 
-        // TODO uncomment this once the API is ready
-        //fetchNextTrainTime(duration, closestStation, destinationStation, arrivalTime, dispatch);
+        const trainScheduleCallback = (trainScheduleResponse) => {
+          let action = null;
+          if (trainScheduleResponse.error){
+            action = fetchDirectionsFailure({error: trainScheduleResponse.error})
+          }else {
+            const trainDepartureTime = trainScheduleResponse.sequence.arrivals[0].departureTime;
+            const secondsToDeparture = calculateSecondsToDeparture(trainDepartureTime, walkingDuration);
+            action = fetchDirectionsResponse({secondsToDeparture});
+          }
 
-        //TODO dont dispatch here, and dont pass back timeToLeave, its for testing atm
-        const action = fetchDirectionsResponse({duration, timeToLeave:duration});
-        dispatch(action);
+          dispatch(action);
+        };
+
+        const adjustedDepartureTime = calculateDepartureTime(walkingDuration, departureTime)
+        return fetchNextTrainTime(closestStation, destinationStation, adjustedDepartureTime, trainScheduleCallback);
       })
       .catch(function(error) {
+        console.log(error);
         dispatch(fetchDirectionsFailure(error));
       })
   }

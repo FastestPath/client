@@ -49,7 +49,7 @@ const PathTimer = React.createClass({
       presetHour: 12,
       presetMinute: 0,
       selectedStation: null,
-      timePromptText: 'Time of arrival (optional)',
+      timePromptText: 'Departure Time (optional)',
       stationPromptText: 'Please select your destination'
     };
   },
@@ -107,7 +107,7 @@ const PathTimer = React.createClass({
       }
     }
 
-    const destinationStation = Station[selectedStation];
+    const destinationStation = Station[selectedStation] || Station["DEFAULT"];
     const time = { hour, minute };
 
     this.props.fetchDirections({origin, destinationStation, time});
@@ -142,7 +142,7 @@ const PathTimer = React.createClass({
           Cancel
         </Button>
         <Text style={styles.instructions}>
-          Leave in {directions.timeToLeave} to catch your train
+          Leave in {directions.secondsToDeparture} to catch your train
         </Text>
       </View>
     );
@@ -186,7 +186,7 @@ const PathTimer = React.createClass({
           {this.departText()}
         </Button>
 
-        { directions.timeToLeave && this.renderTimer() }
+        { directions.secondsToDeparture && this.renderTimer() }
 
       </View>
     );
