@@ -1,7 +1,0 @@
-.DS_Store
-.idea/*
-!.idea/runConfigurations/
-.gradle
-build/
-src/main/resources/stop_times.txt
-!gradle-wrapper.jar
