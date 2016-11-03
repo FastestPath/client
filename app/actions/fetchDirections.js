@@ -47,8 +47,9 @@ function createPathURLFromParams(options){
   const destinationParam = destinationStation.value;
   const originParam = closestStation.value;
 
-  //TODO Change this url when the server is live
-  let url = `http://192.168.1.153:9000/api/schedule?`
+  apiURL = __DEV__ ? `http://192.168.1.153:9000/api/schedule?` : 'http://api.fastestpath.co/api/schedule?';
+
+  let url = apiURL
     +`from=${originParam}`
     +`&to=${destinationParam}`
     +`&departAt=${departureTime}`
@@ -93,7 +94,6 @@ function fetchNextTrainTime(closestStation, destinationStation, departureTime, t
   const url = createPathURLFromParams({closestStation, destinationStation, departureTime});
 
   return fetch(url)
-  //return fetch('http://192.168.1.153:9000/api/schedule?from=WORLD_TRADE_CENTER&to=JOURNAL_SQUARE&departAt=2016-10-31T23:03:27.845Z')
     .then(function(response) {
       if (response.status >= 400) {
         throw new Error("Bad response from server");
@@ -133,11 +133,6 @@ export default function (options) {
       .then((json) => {
         const walkingDuration = calculateDuration(json);
 
-        //PushNotification.localNotificationSchedule({
-        //  message: "Its time to leave for your train!!",
-        //  date: new Date(Date.now() + (2 * 1000)) // in 2 secs
-        //});
-
         const trainScheduleCallback = (trainScheduleResponse) => {
           let action = null;
           if (trainScheduleResponse.error){
@@ -147,6 +142,11 @@ export default function (options) {
             const secondsToDeparture = calculateSecondsToDeparture(trainDepartureTime, walkingDuration);
             action = fetchDirectionsResponse({secondsToDeparture});
           }
+
+          PushNotification.localNotificationSchedule({
+            message: "Its time to leave for your train!!",
+            date: new Date(Date.now() + (secondsToDeparture * 1000))
+          });
 
           dispatch(action);
         };
