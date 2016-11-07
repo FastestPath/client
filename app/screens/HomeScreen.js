@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   welcome: {
-    fontSize: 20,
+    fontFamily: 'enzo',
+    fontSize: 26,
     textAlign: 'center',
     margin: 40,
   },
@@ -156,7 +157,7 @@ const PathTimer = React.createClass({
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          PATH Timer
+          FastestPATH
         </Text>
 
         <Text>

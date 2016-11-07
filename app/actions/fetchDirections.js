@@ -47,12 +47,12 @@ function createPathURLFromParams(options){
   const destinationParam = destinationStation.value;
   const originParam = closestStation.value;
 
-  apiURL = __DEV__ ? `http://192.168.1.153:9000/api/schedule?` : 'http://api.fastestpath.co/api/schedule?';
+  apiURL = __DEV__ ? `http://192.168.1.153:9000/api/schedule?` : 'http://api.fastestpath.co/schedule?';
 
   let url = apiURL
     +`from=${originParam}`
     +`&to=${destinationParam}`
-    +`&departAt=${departureTime}`
+    +`&departAt=${departureTime}`;
 
   console.log(url);
   return url;
