@@ -24,9 +24,22 @@ const styles = StyleSheet.create({
   },
   banner: {
     height: 50,
+    flexDirection: 'row',
     justifyContent: 'center',
     backgroundColor: 'white',
     padding
+  },
+  logoLeft: {
+    flexGrow: 0,
+    fontStyle: 'italic',
+    fontSize: 18
+  },
+  logoRight: {
+    flexGrow: 1,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    fontSize: 16,
+    lineHeight: 24
   },
   welcome: {
     fontFamily: 'enzo',
@@ -164,7 +177,8 @@ const PathTimer = React.createClass({
     return (
       <View style={styles.container}>
         <View style={styles.banner}>
-          <Text>FastestPATH</Text>
+          <Text style={styles.logoLeft}>Fastest</Text>
+          <Text style={styles.logoRight}>PATH</Text>
         </View>
         <Text>
           Please select your destination
