@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,23 +11,33 @@ import Station from '../constants/Station';
 import StationPicker from '../components/StationPicker';
 import formatHourMinute from '../utils/formatHourMinute';
 import formatSeconds from '../utils/formatSeconds';
+import {
+  backgroundColor,
+  padding
+} from '../styles';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
+    backgroundColor
+  },
+  banner: {
+    height: 50,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white',
+    padding
   },
   welcome: {
     fontFamily: 'enzo',
     fontSize: 26,
     textAlign: 'center',
+    color: '#FCFFF7',
     margin: 40,
   },
   instructions: {
     textAlign: 'center',
-    color: '#333333',
+    color: '#FCFFF7',
     marginBottom: 30,
   },
   button: {
@@ -134,9 +144,6 @@ const PathTimer = React.createClass({
 
   renderTimer() {
     const directions = this.props.directions;
-
-
-
     return (
       <View>
         <Button>
@@ -156,14 +163,12 @@ const PathTimer = React.createClass({
 
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          FastestPATH
-        </Text>
-
+        <View style={styles.banner}>
+          <Text>FastestPATH</Text>
+        </View>
         <Text>
           Please select your destination
         </Text>
-
         <StationPicker
           style={styles.picker}
           defaultValue={stationPromptText}

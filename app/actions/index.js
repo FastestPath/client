@@ -1,7 +1,5 @@
 import fetchDirections from './fetchDirections';
 
-const actions = {
+export default {
   fetchDirections
 };
-
-export default actions;

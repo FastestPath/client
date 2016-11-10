@@ -1,5 +1,6 @@
 import directionsReducer from './directionsReducer';
 
-export {
+export default {
   directionsReducer
 };
+

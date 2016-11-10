@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import {
@@ -8,8 +8,8 @@ import {
   combineReducers
 } from 'redux';
 
-import * as actions from './actions';
-import * as reducers from './reducers';
+import actions from './actions';
+import reducers from './reducers';
 
 import HomeScreen from './screens/HomeScreen';
 
@@ -17,39 +17,33 @@ const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 const reducer = combineReducers(reducers);
 const store = createStoreWithMiddleware(reducer);
 
+const FastestPath = React.createClass({
+  render() {
+    const { directions, actions } = this.props;
+    return (
+      <HomeScreen
+        directions={directions}
+        {...actions}
+      />
+    );
+  }
+});
+
 function mapStateToProps(state) {
-  return {
-    directions: state.directionsReducer.directions
-  };
+  return { directions: state.directionsReducer.directions };
 }
 
 function wrapActions(dispatch) {
-  return {
-    //have to specify the default actions since we're importing from a folder.
-    actions: bindActionCreators(actions.default, dispatch)
-  }
+  return { actions: bindActionCreators(actions, dispatch) };
 }
 
-class PathTimer extends Component {
-  render() {
-   const { directions, actions } = this.props;
-   return (
-     <HomeScreen
-       directions={directions}
-       {...actions}
-     />
-   );
-  }
+const ConnectedFastestPath = connect(mapStateToProps, wrapActions)(FastestPath);
+
+export default function() {
+  return (
+    <Provider store={store}>
+      <ConnectedFastestPath />
+    </Provider>
+  );
 }
 
-const ConnectedPathTimer = connect(mapStateToProps, wrapActions)(PathTimer);
-
-export default class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <ConnectedPathTimer />
-      </Provider>
-    );
-  }
-}
