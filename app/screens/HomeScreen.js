@@ -4,6 +4,7 @@ import {
   Text,
   View,
   TimePickerAndroid,
+  TouchableHighlight,
   TouchableNativeFeedback
 } from 'react-native';
 import Button from 'react-native-button';
@@ -13,48 +14,69 @@ import formatHourMinute from '../utils/formatHourMinute';
 import formatSeconds from '../utils/formatSeconds';
 import {
   backgroundColor,
-  padding
+  margin,
+  paddingVertical,
+  paddingHorizontal,
+  borderRadius,
+  textShadow
 } from '../styles';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
     backgroundColor
   },
   banner: {
     height: 50,
     flexDirection: 'row',
     justifyContent: 'center',
-    backgroundColor: 'white',
-    padding
+    margin
+  },
+  departureRow: {
+    flexDirection: 'row',
   },
   logoLeft: {
+    color: 'white',
     flexGrow: 0,
     fontStyle: 'italic',
     fontSize: 18
   },
   logoRight: {
+    color: 'white',
     flexGrow: 1,
     fontStyle: 'italic',
     fontWeight: 'bold',
     fontSize: 16,
     lineHeight: 24
   },
+  button: {
+    flex: 1,
+    backgroundColor: '#CF7A00',
+    margin,
+    paddingVertical,
+    paddingHorizontal
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: '400'
+  },
+  rightSlant: {
+  },
+  leftSlant: {
+    color: '#444',
+    backgroundColor: '#eee'
+  },
   welcome: {
     fontFamily: 'enzo',
     fontSize: 26,
     textAlign: 'center',
     color: '#FCFFF7',
-    margin: 40,
+    margin: 40
   },
   instructions: {
     textAlign: 'center',
     color: '#FCFFF7',
-    marginBottom: 30,
-  },
-  button: {
-    marginBottom:30
+    marginBottom: 30
   },
   picker: {
     marginBottom:30
@@ -179,6 +201,14 @@ const PathTimer = React.createClass({
         <View style={styles.banner}>
           <Text style={styles.logoLeft}>Fastest</Text>
           <Text style={styles.logoRight}>PATH</Text>
+        </View>
+        <View style={styles.departureRow}>
+            <View style={[styles.button, styles.rightSlant]}>
+              <Text>Leave Now</Text>
+            </View>
+            <View style={[styles.button, styles.leftSlant]}>
+              <Text>Arrive At</Text>
+            </View>
         </View>
         <Text>
           Please select your destination
