@@ -11,6 +11,7 @@ import NavigationView from './NavigationView';
 import Station from '../constants/Station';
 import Button from '../components/Button';
 import Hamburger from '../components/Hamburger';
+import Label from '../components/Label';
 import Layout from '../components/Layout'
 import Logo from '../components/Logo';
 import StationPicker from '../components/StationPicker';
@@ -37,8 +38,8 @@ const stylesheet = StyleSheet.create({
   },
   departureRow: {
     flexDirection: 'row',
+    paddingHorizontal: margin
   },
-
   welcome: {
     fontFamily: 'enzo',
     fontSize: 26,
@@ -180,12 +181,26 @@ const PathTimer = React.createClass({
             <Logo />
           </View>
 
+          <Label text="Depart at" />
           <View style={stylesheet.departureRow}>
-            <Button label="Leave Now"/>
+            <Button
+              label="Leave Now"
+              style={{
+                view: {
+                  marginRight: 0,
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0
+                }
+              }}/>
             <Button
               label="Arrive At"
               style={{
-                view: { backgroundColor: '#EFF' },
+                view: {
+                  marginLeft: 0,
+                  borderTopLeftRadius: 0,
+                  borderBottomLeftRadius: 0,
+                  backgroundColor: '#EFF',
+              },
                 text: { color: dark }
               }}/>
           </View>

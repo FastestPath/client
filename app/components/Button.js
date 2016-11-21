@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import {
   margin,
+  blue,
   paddingVertical,
   paddingHorizontal,
   borderRadius,
@@ -17,8 +18,7 @@ const stylesheet = StyleSheet.create({
     flex: 1
   },
   view: {
-    backgroundColor: '#CF7A00',
-    margin,
+    backgroundColor: blue,
     paddingVertical,
     paddingHorizontal,
     borderRadius

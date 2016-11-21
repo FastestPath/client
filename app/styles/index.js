@@ -1,6 +1,7 @@
-const grid = 14;
+export const grid = 14;
 
 export const dark = '#050505';
+export const blue = '#4286f4';
 
 export const backgroundColor = dark;
 export const margin = grid;
