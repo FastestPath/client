@@ -3,25 +3,28 @@ import {
   StyleSheet,
   Text,
   View,
-  TimePickerAndroid,
-  TouchableHighlight,
-  TouchableNativeFeedback
+  TimePickerAndroid
 } from 'react-native';
-import Button from 'react-native-button';
+
+import NavigationView from './NavigationView';
+
 import Station from '../constants/Station';
+import Button from '../components/Button';
+import Layout from '../components/Layout'
+import Logo from '../components/Logo';
+import Toolbar from '../components/Toolbar';
 import StationPicker from '../components/StationPicker';
+
 import formatHourMinute from '../utils/formatHourMinute';
 import formatSeconds from '../utils/formatSeconds';
+
 import {
+  dark,
   backgroundColor,
   margin,
-  paddingVertical,
-  paddingHorizontal,
-  borderRadius,
-  textShadow
 } from '../styles';
 
-const styles = StyleSheet.create({
+const stylesheet = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor
@@ -35,47 +38,15 @@ const styles = StyleSheet.create({
   departureRow: {
     flexDirection: 'row',
   },
-  logoLeft: {
-    color: 'white',
-    flexGrow: 0,
-    fontStyle: 'italic',
-    fontSize: 18
-  },
-  logoRight: {
-    color: 'white',
-    flexGrow: 1,
-    fontStyle: 'italic',
-    fontWeight: 'bold',
-    fontSize: 16,
-    lineHeight: 24
-  },
-  button: {
-    flex: 1,
-    backgroundColor: '#CF7A00',
-    margin,
-    paddingVertical,
-    paddingHorizontal
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '400'
-  },
-  rightSlant: {
-  },
-  leftSlant: {
-    color: '#444',
-    backgroundColor: '#eee'
-  },
+
   welcome: {
     fontFamily: 'enzo',
     fontSize: 26,
     textAlign: 'center',
-    color: '#FCFFF7',
     margin: 40
   },
   instructions: {
     textAlign: 'center',
-    color: '#FCFFF7',
     marginBottom: 30
   },
   picker: {
@@ -181,10 +152,8 @@ const PathTimer = React.createClass({
     const directions = this.props.directions;
     return (
       <View>
-        <Button>
-          Cancel
-        </Button>
-        <Text style={styles.instructions}>
+        <Button label="Cancel" />
+        <Text style={stylesheet.instructions}>
           Leave in {directions.secondsToDeparture} to catch your train
         </Text>
       </View>
@@ -197,48 +166,48 @@ const PathTimer = React.createClass({
     const { selectedStation, stationPromptText } = this.state;
 
     return (
-      <View style={styles.container}>
-        <View style={styles.banner}>
-          <Text style={styles.logoLeft}>Fastest</Text>
-          <Text style={styles.logoRight}>PATH</Text>
-        </View>
-        <View style={styles.departureRow}>
-            <View style={[styles.button, styles.rightSlant]}>
-              <Text>Leave Now</Text>
-            </View>
-            <View style={[styles.button, styles.leftSlant]}>
-              <Text>Arrive At</Text>
-            </View>
-        </View>
-        <Text>
-          Please select your destination
-        </Text>
-        <StationPicker
-          style={styles.picker}
-          defaultValue={stationPromptText}
-          selectedValue={selectedStation}
-          onValueChange={this.handleStationChange}
-        />
+      <Layout
+        renderNavigationView={NavigationView}
+      >
+        <View style={stylesheet.container}>
+          <Toolbar><Logo /></Toolbar>
+          <View style={stylesheet.departureRow}>
+            <Button label="Leave Now"/>
+            <Button
+              label="Arrive At"
+              style={{
+                view: { backgroundColor: '#EFF' },
+                text: { color: dark }
+              }}/>
+          </View>
+          <Text>
+            Please select your destination
+          </Text>
+          <StationPicker
+            style={stylesheet.picker}
+            defaultValue={stationPromptText}
+            selectedValue={selectedStation}
+            onValueChange={this.handleStationChange}
+          />
 
-        <Button
-          onPress={ () => this.showPicker({
+          <Button
+            onPress={ () => this.showPicker({
               hour: this.state.hour || this.state.presetHour,
               minute: this.state.minute || this.state.presetMinute,
             })}
-          style={styles.button}
-        >
-          {this.state.timePromptText}
-        </Button>
+            style={stylesheet.button}
+          >
+            {this.state.timePromptText}
+          </Button>
 
-        <Button
-          onPress={this.handleSubmit}
-        >
-          {this.departText()}
-        </Button>
+          <Button onPress={this.handleSubmit}>
+            {this.departText()}
+          </Button>
 
-        { directions.secondsToDeparture && this.renderTimer() }
+          { directions.secondsToDeparture && this.renderTimer() }
 
-      </View>
+        </View>
+      </Layout>
     );
   }
 });
