@@ -9,7 +9,7 @@ import { margin } from '../styles';
 
 const stylesheet = StyleSheet.create({
   view: {
-    flexGrow: 0,
+    flex: 1,
     flexDirection: 'row',
     margin
   },

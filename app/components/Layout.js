@@ -10,17 +10,28 @@ const DEFAULTS = Object.freeze({
   renderNavigationView: () => {}
 });
 
-const Layout = ({ children, ...props }) => {
-  const options = {
-    ...DEFAULTS,
-    ...props
-  };
+const Layout = React.createClass({
 
-  console.log(options.renderNavigationView);
+  open() {
+    this.layout.openDrawer();
+  },
 
-  return (
-    <DrawerLayoutAndroid {...options}>{children}</DrawerLayoutAndroid>
-  );
-};
+  close() {
+    this.layout.closeDrawer();
+  },
+
+  render() {
+    const { children, ...props } = this.props;
+    const options = {
+      ...DEFAULTS,
+      ...props,
+      ref: (layout) => this.layout = layout,
+    };
+
+    return (
+      <DrawerLayoutAndroid {...options}>{children}</DrawerLayoutAndroid>
+    );
+  }
+});
 
 export default Layout;

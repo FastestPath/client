@@ -10,9 +10,9 @@ import NavigationView from './NavigationView';
 
 import Station from '../constants/Station';
 import Button from '../components/Button';
+import Hamburger from '../components/Hamburger';
 import Layout from '../components/Layout'
 import Logo from '../components/Logo';
-import Toolbar from '../components/Toolbar';
 import StationPicker from '../components/StationPicker';
 
 import formatHourMinute from '../utils/formatHourMinute';
@@ -29,11 +29,11 @@ const stylesheet = StyleSheet.create({
     flex: 1,
     backgroundColor
   },
-  banner: {
+  toolbar: {
     height: 50,
+    flex: 0,
     flexDirection: 'row',
     justifyContent: 'center',
-    margin
   },
   departureRow: {
     flexDirection: 'row',
@@ -80,6 +80,10 @@ const PathTimer = React.createClass({
 
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watchId);
+  },
+
+  handleHamburgerPress() {
+    this.layout.open();
   },
 
   showPicker: async function(options) {
@@ -167,10 +171,15 @@ const PathTimer = React.createClass({
 
     return (
       <Layout
+        ref={(layout) => this.layout = layout}
         renderNavigationView={NavigationView}
       >
         <View style={stylesheet.container}>
-          <Toolbar><Logo /></Toolbar>
+          <View style={stylesheet.toolbar}>
+            <Hamburger onPress={this.handleHamburgerPress} />
+            <Logo />
+          </View>
+
           <View style={stylesheet.departureRow}>
             <Button label="Leave Now"/>
             <Button
@@ -180,31 +189,31 @@ const PathTimer = React.createClass({
                 text: { color: dark }
               }}/>
           </View>
-          <Text>
-            Please select your destination
-          </Text>
-          <StationPicker
-            style={stylesheet.picker}
-            defaultValue={stationPromptText}
-            selectedValue={selectedStation}
-            onValueChange={this.handleStationChange}
-          />
+          {/*<Text>*/}
+            {/*Please select your destination*/}
+          {/*</Text>*/}
+          {/*<StationPicker*/}
+            {/*style={stylesheet.picker}*/}
+            {/*defaultValue={stationPromptText}*/}
+            {/*selectedValue={selectedStation}*/}
+            {/*onValueChange={this.handleStationChange}*/}
+          {/*/>*/}
 
-          <Button
-            onPress={ () => this.showPicker({
-              hour: this.state.hour || this.state.presetHour,
-              minute: this.state.minute || this.state.presetMinute,
-            })}
-            style={stylesheet.button}
-          >
-            {this.state.timePromptText}
-          </Button>
+          {/*<Button*/}
+            {/*onPress={ () => this.showPicker({*/}
+              {/*hour: this.state.hour || this.state.presetHour,*/}
+              {/*minute: this.state.minute || this.state.presetMinute,*/}
+            {/*})}*/}
+            {/*style={stylesheet.button}*/}
+          {/*>*/}
+            {/*{this.state.timePromptText}*/}
+          {/*</Button>*/}
 
-          <Button onPress={this.handleSubmit}>
-            {this.departText()}
-          </Button>
+          {/*<Button onPress={this.handleSubmit}>*/}
+            {/*{this.departText()}*/}
+          {/*</Button>*/}
 
-          { directions.secondsToDeparture && this.renderTimer() }
+          {/*{ directions.secondsToDeparture && this.renderTimer() }*/}
 
         </View>
       </Layout>
