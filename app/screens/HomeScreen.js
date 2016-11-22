@@ -6,14 +6,9 @@ import {
   TimePickerAndroid
 } from 'react-native';
 
-import NavigationView from './NavigationView';
-
 import Station from '../constants/Station';
 import Button from '../components/Button';
-import Hamburger from '../components/Hamburger';
 import Label from '../components/Label';
-import Layout from '../components/Layout'
-import Logo from '../components/Logo';
 import StationPicker from '../components/StationPicker';
 
 import formatHourMinute from '../utils/formatHourMinute';
@@ -27,21 +22,12 @@ import {
 } from '../styles';
 
 const stylesheet = StyleSheet.create({
-  layout: {
-    backgroundColor
-  },
   container: {
     flex: 1,
     backgroundColor,
     margin
   },
-  toolbar: {
-    height: 50,
-    flex: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  departureRow: {
+ departureRow: {
     flexDirection: 'row'
   },
   welcome: {
@@ -55,7 +41,7 @@ const stylesheet = StyleSheet.create({
     marginBottom: 30
   },
   picker: {
-    marginBottom:30
+    marginBottom: 30
   }
 });
 
@@ -91,7 +77,7 @@ const PathTimer = React.createClass({
     this.layout.open();
   },
 
-  showPicker: async function(options) {
+  showPicker: async function (options) {
     try {
       const { action, minute, hour } = await TimePickerAndroid.open(options);
 
@@ -107,7 +93,7 @@ const PathTimer = React.createClass({
         return this.setState({ timeText: 'dismissed' });
       }
 
-    } catch ({code, message}) {
+    } catch ({ code, message }) {
       console.warn(`Error in example: `, message);
     }
   },
@@ -122,14 +108,14 @@ const PathTimer = React.createClass({
 
     let origin = null;
 
-    if (currentPosition){
+    if (currentPosition) {
       const positionJson = JSON.parse(currentPosition);
       origin = positionJson.coords;
     } else {
       // TODO this is for testing, remove when done, handle error when location not found
       origin = {
-          latitude: 40.735,
-          longitude: -74.027
+        latitude: 40.735,
+        longitude: -74.027
       }
     }
 
@@ -150,7 +136,7 @@ const PathTimer = React.createClass({
       timeText
     } = this.state;
 
-    if (hour && minute){
+    if (hour && minute) {
       return 'Leave at ' + timeText;
     } else {
       return 'Leave ASAP'
@@ -161,7 +147,7 @@ const PathTimer = React.createClass({
     const directions = this.props.directions;
     return (
       <View>
-        <Button label="Cancel" />
+        <Button label="Cancel"/>
         <Text style={stylesheet.instructions}>
           Leave in {directions.secondsToDeparture} to catch your train
         </Text>
@@ -175,46 +161,37 @@ const PathTimer = React.createClass({
     const { selectedStation, stationPromptText } = this.state;
 
     return (
-      <Layout
-        ref={(layout) => this.layout = layout}
-        renderNavigationView={NavigationView}
-        style={stylesheet.layout}
-      >
-        <View style={stylesheet.container}>
-          <View style={stylesheet.toolbar}>
-            <Hamburger onPress={this.handleHamburgerPress} />
-            <Logo />
-          </View>
+      <View style={stylesheet.container}>
 
-          <Label text="Departure Time" />
-          <View style={stylesheet.departureRow}>
-            <Button
-              label="Leave Now"
-              style={{
-                view: {
-                  marginRight: 0,
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0
-                }
-              }}/>
-            <Button
-              label="Arrive At"
-              style={{
-                view: {
-                  marginLeft: 0,
-                  borderTopLeftRadius: 0,
-                  borderBottomLeftRadius: 0,
-                  backgroundColor: light
+        <Label text="Departure Time"/>
+        <View style={stylesheet.departureRow}>
+          <Button
+            label="Leave Now"
+            style={{
+              view: {
+                marginRight: 0,
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0
+              }
+            }}/>
+          <Button
+            label="Arrive At"
+            style={{
+              view: {
+                marginLeft: 0,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+                backgroundColor: light
               },
-                text: { color: dark }
-              }}/>
-          </View>
+              text: { color: dark }
+            }}/>
+        </View>
 
-          <Label text="Departure Station" />
+        <Label text="Departure Station" />
 
-          <Label text="Arrival Station" />
+        <Label text="Arrival Station" />
 
-          <Button label="Find a Train" onPress={this.handleSubmit}/>
+        <Button label="Find a Train" onPress={this.handleSubmit} />
           {/*<Text>*/}
             {/*Please select your destination*/}
           {/*</Text>*/}
@@ -225,24 +202,23 @@ const PathTimer = React.createClass({
             {/*onValueChange={this.handleStationChange}*/}
           {/*/>*/}
 
-          {/*<Button*/}
-            {/*onPress={ () => this.showPicker({*/}
-              {/*hour: this.state.hour || this.state.presetHour,*/}
-              {/*minute: this.state.minute || this.state.presetMinute,*/}
-            {/*})}*/}
-            {/*style={stylesheet.button}*/}
-          {/*>*/}
-            {/*{this.state.timePromptText}*/}
-          {/*</Button>*/}
+        {/*<Button*/}
+        {/*onPress={ () => this.showPicker({*/}
+        {/*hour: this.state.hour || this.state.presetHour,*/}
+        {/*minute: this.state.minute || this.state.presetMinute,*/}
+        {/*})}*/}
+        {/*style={stylesheet.button}*/}
+        {/*>*/}
+        {/*{this.state.timePromptText}*/}
+        {/*</Button>*/}
 
-          {/*<Button onPress={this.handleSubmit}>*/}
-            {/*{this.departText()}*/}
-          {/*</Button>*/}
+        {/*<Button onPress={this.handleSubmit}>*/}
+        {/*{this.departText()}*/}
+        {/*</Button>*/}
 
-          {/*{ directions.secondsToDeparture && this.renderTimer() }*/}
+        {/*{ directions.secondsToDeparture && this.renderTimer() }*/}
 
-        </View>
-      </Layout>
+      </View>
     );
   }
 });

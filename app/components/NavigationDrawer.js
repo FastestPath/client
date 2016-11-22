@@ -44,7 +44,7 @@ const stylesheet = StyleSheet.create({
   }
 });
 
-const NavigationView = () => {
+const NavigationDrawer = () => {
   return (
     <View style={stylesheet.container}>
       <Item icon="directions-subway">Plan a Trip</Item>
@@ -70,4 +70,4 @@ const Item = ({ icon, children }) => {
   );
 };
 
-export default NavigationView;
+export default NavigationDrawer;

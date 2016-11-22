@@ -12,11 +12,11 @@ const DEFAULTS = Object.freeze({
 
 const Layout = React.createClass({
 
-  open() {
+  openDrawer() {
     this.layout.openDrawer();
   },
 
-  close() {
+  closeDrawer() {
     this.layout.closeDrawer();
   },
 

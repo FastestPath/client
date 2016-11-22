@@ -11,23 +11,11 @@ import {
 import actions from './actions';
 import reducers from './reducers';
 
-import HomeScreen from './screens/HomeScreen';
+import FastestPath from './FastestPath';
 
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 const reducer = combineReducers(reducers);
 const store = createStoreWithMiddleware(reducer);
-
-const FastestPath = React.createClass({
-  render() {
-    const { directions, actions } = this.props;
-    return (
-      <HomeScreen
-        directions={directions}
-        {...actions}
-      />
-    );
-  }
-});
 
 function mapStateToProps(state) {
   return { directions: state.directionsReducer.directions };
