@@ -21,6 +21,7 @@ import formatSeconds from '../utils/formatSeconds';
 
 import {
   dark,
+  light,
   backgroundColor,
   margin,
 } from '../styles';
@@ -199,7 +200,7 @@ const PathTimer = React.createClass({
                   marginLeft: 0,
                   borderTopLeftRadius: 0,
                   borderBottomLeftRadius: 0,
-                  backgroundColor: '#EFF',
+                  backgroundColor: light
               },
                 text: { color: dark }
               }}/>

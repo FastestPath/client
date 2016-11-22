@@ -29,7 +29,6 @@ const stylesheet = StyleSheet.create({
     fontSize: 16,
     marginLeft: margin,
     color: 'white',
-    alignSelf: 'center'
   },
   spacer: {
    flex: 1
@@ -40,7 +39,8 @@ const stylesheet = StyleSheet.create({
   },
   copyright: {
     fontSize: 12,
-    textAlign: 'center'
+    textAlign: 'center',
+    color: 'rgba(255, 255, 255, 0.7)'
   }
 });
 
@@ -64,7 +64,7 @@ const NavigationView = () => {
 const Item = ({ icon, children }) => {
   return (
     <View style={stylesheet.item}>
-      <Icon name={icon} size={30} color="white"/>
+      <Icon name={icon} size={25} color="white"/>
       <Text style={stylesheet.text}>{children}</Text>
     </View>
   );
