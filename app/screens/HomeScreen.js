@@ -45,7 +45,7 @@ const stylesheet = StyleSheet.create({
   }
 });
 
-const PathTimer = React.createClass({
+const HomeScreen = React.createClass({
 
   watchId: null,
 
@@ -223,4 +223,4 @@ const PathTimer = React.createClass({
   }
 });
 
-export default PathTimer;
+export default HomeScreen;

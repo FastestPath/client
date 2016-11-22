@@ -24,7 +24,7 @@ const stylesheet = StyleSheet.create({
 const AlertsScreen = React.createClass({
 
   render() {
-    return <Text style={{ color: 'white' }}>Hello World</Text>;
+    return <Text style={{ color: 'white' }}>Current route: {this.context.route}</Text>;
   }
 
 });

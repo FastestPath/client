@@ -33,9 +33,10 @@ const FastestPath = React.createClass({
     this.layout.openDrawer();
   },
 
-  renderContainer(component) {
+  renderContainer(component, dispatch) {
     return (
       <Layout
+        dispatch={dispatch}
         ref={(layout) => this.layout = layout}
         renderNavigationView={NavigationDrawer}
         style={stylesheet.layout}
@@ -52,7 +53,7 @@ const FastestPath = React.createClass({
   render() {
     const { directions, actions } = this.props;
     return (
-      <Router container={this.renderContainer} route="home">
+      <Router container={this.renderContainer}>
         <Route name="home">
           <HomeScreen
             directions={directions}

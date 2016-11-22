@@ -21,11 +21,18 @@ const Layout = React.createClass({
   },
 
   render() {
-    const { children, ...props } = this.props;
+    const {
+      dispatch,
+      renderNavigationView,
+      children,
+      ...props
+    } = this.props;
+
     const options = {
       ...DEFAULTS,
       ...props,
       ref: (layout) => this.layout = layout,
+      renderNavigationView: () => renderNavigationView(dispatch)
     };
 
     return (

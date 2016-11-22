@@ -23,8 +23,9 @@ const Router = React.createClass({
   },
 
   render() {
+    const { container, dispatch } = this.props;
     const component = this.findSelectedComponent();
-    return this.props.container(component.props.children);
+    return container(component.props.children, dispatch);
   }
 
 });

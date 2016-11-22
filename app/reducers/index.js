@@ -1,6 +1,8 @@
+import routerReducer from './routerReducer';
 import directionsReducer from './directionsReducer';
 
 export default {
-  directionsReducer
+  route: routerReducer,
+  directions: directionsReducer
 };
 

@@ -18,7 +18,7 @@ const reducer = combineReducers(reducers);
 const store = createStoreWithMiddleware(reducer);
 
 function mapStateToProps(state) {
-  return { directions: state.directionsReducer.directions };
+  return { directions: state.directions.directions };
 }
 
 function wrapActions(dispatch) {

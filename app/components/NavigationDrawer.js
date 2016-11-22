@@ -2,10 +2,13 @@ import React from 'react';
 import {
   StyleSheet,
   Text,
+  TouchableHighlight,
   View,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
+import changeRoute from '../actions/changeRoute';
 
 import {
   margin,
@@ -44,11 +47,14 @@ const stylesheet = StyleSheet.create({
   }
 });
 
-const NavigationDrawer = () => {
+const NavigationDrawer = (dispatch) => {
+
+  const go = (route) => dispatch(changeRoute(route));
+
   return (
     <View style={stylesheet.container}>
-      <Item icon="directions-subway">Plan a Trip</Item>
-      <Item icon="announcement">PATH Alerts</Item>
+      <Item icon="directions-subway" onPress={() => go('home')}>Plan a Trip</Item>
+      <Item icon="announcement" onPress={() => go('alerts')}>PATH Alerts</Item>
       <Item icon="thumbs-up-down">Feedback</Item>
       <Item icon="settings">Settings</Item>
       <View style={stylesheet.spacer}/>
@@ -61,12 +67,14 @@ const NavigationDrawer = () => {
   );
 };
 
-const Item = ({ icon, children }) => {
+const Item = ({ icon, onPress, children }) => {
   return (
-    <View style={stylesheet.item}>
-      <Icon name={icon} size={25} color="white"/>
-      <Text style={stylesheet.text}>{children}</Text>
-    </View>
+    <TouchableHighlight onPress={onPress}>
+      <View style={stylesheet.item}>
+        <Icon name={icon} size={25} color="white"/>
+        <Text style={stylesheet.text}>{children}</Text>
+      </View>
+    </TouchableHighlight>
   );
 };
 
