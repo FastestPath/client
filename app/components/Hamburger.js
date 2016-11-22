@@ -12,8 +12,7 @@ import { margin } from '../styles';
 const stylesheet = StyleSheet.create({
   container: {
     flex: 0,
-    margin,
-    marginRight: 0
+    marginRight: margin
   }
 });
 

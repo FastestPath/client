@@ -5,13 +5,11 @@ import {
   View,
   TouchableHighlight,
 } from 'react-native';
-import { margin } from '../styles';
 
 const stylesheet = StyleSheet.create({
   view: {
     flex: 1,
-    flexDirection: 'row',
-    margin
+    flexDirection: 'row'
   },
   text: {
     color: 'white',

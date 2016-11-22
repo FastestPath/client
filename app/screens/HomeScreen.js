@@ -27,9 +27,13 @@ import {
 } from '../styles';
 
 const stylesheet = StyleSheet.create({
+  layout: {
+    backgroundColor
+  },
   container: {
     flex: 1,
-    backgroundColor
+    backgroundColor,
+    margin
   },
   toolbar: {
     height: 50,
@@ -38,8 +42,7 @@ const stylesheet = StyleSheet.create({
     justifyContent: 'center',
   },
   departureRow: {
-    flexDirection: 'row',
-    paddingHorizontal: margin
+    flexDirection: 'row'
   },
   welcome: {
     fontFamily: 'enzo',
@@ -175,6 +178,7 @@ const PathTimer = React.createClass({
       <Layout
         ref={(layout) => this.layout = layout}
         renderNavigationView={NavigationView}
+        style={stylesheet.layout}
       >
         <View style={stylesheet.container}>
           <View style={stylesheet.toolbar}>
@@ -182,7 +186,7 @@ const PathTimer = React.createClass({
             <Logo />
           </View>
 
-          <Label text="Depart at" />
+          <Label text="Departure Time" />
           <View style={stylesheet.departureRow}>
             <Button
               label="Leave Now"
@@ -205,6 +209,12 @@ const PathTimer = React.createClass({
                 text: { color: dark }
               }}/>
           </View>
+
+          <Label text="Departure Station" />
+
+          <Label text="Arrival Station" />
+
+          <Button label="Find a Train" />
           {/*<Text>*/}
             {/*Please select your destination*/}
           {/*</Text>*/}

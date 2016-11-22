@@ -13,8 +13,7 @@ const stylesheet = StyleSheet.create({
     color: 'white',
     fontSize: 11,
     fontWeight: 'bold',
-    marginVertical: grid / 2,
-    marginHorizontal: grid
+    marginVertical: grid / 2
   }
 });
 
