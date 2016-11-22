@@ -5,6 +5,8 @@ import { Router, Route } from './router';
 
 import HomeScreen from './screens/HomeScreen';
 import AlertsScreen from './screens/AlertsScreen';
+import FeedbackScreen from './screens/FeedbackScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 import NavigationDrawer from './components/NavigationDrawer';
 import Layout from './components/Layout';
@@ -62,6 +64,12 @@ const FastestPath = React.createClass({
         </Route>
         <Route name="alerts">
           <AlertsScreen />
+        </Route>
+        <Route name="feedback">
+          <FeedbackScreen />
+        </Route>
+         <Route name="settings">
+          <SettingsScreen />
         </Route>
       </Router>
     );

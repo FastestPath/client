@@ -8,7 +8,7 @@ import {
 const stylesheet = StyleSheet.create({
 });
 
-const AlertsScreen = React.createClass({
+const FeedbackScreen = React.createClass({
 
   contextTypes: {
     route: React.PropTypes.string.isRequired
@@ -20,4 +20,4 @@ const AlertsScreen = React.createClass({
 
 });
 
-export default AlertsScreen;
+export default FeedbackScreen;

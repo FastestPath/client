@@ -55,8 +55,8 @@ const NavigationDrawer = (dispatch) => {
     <View style={stylesheet.container}>
       <Item icon="directions-subway" onPress={() => go('home')}>Plan a Trip</Item>
       <Item icon="announcement" onPress={() => go('alerts')}>PATH Alerts</Item>
-      <Item icon="thumbs-up-down">Feedback</Item>
-      <Item icon="settings">Settings</Item>
+      <Item icon="thumbs-up-down" onPress={() => go('feedback')}>Feedback</Item>
+      <Item icon="settings" onPress={() => go('settings')}>Settings</Item>
       <View style={stylesheet.spacer}/>
       <View style={stylesheet.footer}>
         <Text style={[stylesheet.text, stylesheet.copyright]}>
