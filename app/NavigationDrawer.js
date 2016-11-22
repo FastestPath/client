@@ -8,13 +8,13 @@ import {
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import changeRoute from '../actions/changeRoute';
+import changeRoute from './actions/changeRoute';
 
 import {
   margin,
   paddingVertical,
   paddingHorizontal
-} from '../styles';
+} from './styles';
 
 const stylesheet = StyleSheet.create({
   container: {

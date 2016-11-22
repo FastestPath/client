@@ -3,12 +3,13 @@ import { StyleSheet, View } from 'react-native';
 
 import { Router, Route } from './router';
 
+import NavigationDrawer from './NavigationDrawer';
+
 import HomeScreen from './screens/HomeScreen';
 import AlertsScreen from './screens/AlertsScreen';
 import FeedbackScreen from './screens/FeedbackScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import NavigationDrawer from './components/NavigationDrawer';
 import Layout from './components/Layout';
 import Logo from './components/Logo';
 import Hamburger from './components/Hamburger';
