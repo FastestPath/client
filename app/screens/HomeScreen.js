@@ -134,9 +134,9 @@ const PathTimer = React.createClass({
     }
 
     const destinationStation = Station[selectedStation] || Station["DEFAULT"];
-    const time = { hour, minute };
+    const departureTime = { hour, minute };
 
-    this.props.fetchDirections({origin, destinationStation, time});
+    this.props.fetchDirections({origin, destinationStation, departureTime});
   },
 
   handleStationChange(value) {
@@ -214,7 +214,7 @@ const PathTimer = React.createClass({
 
           <Label text="Arrival Station" />
 
-          <Button label="Find a Train" />
+          <Button label="Find a Train" onPress={this.handleSubmit}/>
           {/*<Text>*/}
             {/*Please select your destination*/}
           {/*</Text>*/}

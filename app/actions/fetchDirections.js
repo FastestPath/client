@@ -47,7 +47,7 @@ function createPathURLFromParams(options){
   const destinationParam = destinationStation.value;
   const originParam = closestStation.value;
 
-  apiURL = __DEV__ ? `http://192.168.1.153:9000/api/schedule?` : 'http://api.fastestpath.co/schedule?';
+  apiURL = __DEV__ ? `http://192.168.1.153:9000/schedule?` : 'http://api.fastestpath.co/schedule?';
 
   let url = apiURL
     +`from=${originParam}`
@@ -70,23 +70,29 @@ function calculateDuration(json){
 }
 
 function calculateDepartureTime(walkingDuration, desiredDepartureTime){
-  const currentDate = new Date();
+  const departureDate = new Date();
 
   if (desiredDepartureTime && desiredDepartureTime.hour && desiredDepartureTime.minute){
-    currentDate.setHours(desiredDepartureTime.hour);
-    currentDate.setMinutes(desiredDepartureTime.minute);
+    departureDate.setHours(desiredDepartureTime.hour);
+    departureDate.setMinutes(desiredDepartureTime.minute);
+
+    const currentDate = new Date();
+
+    // Avoid going back in the past. Add a day if we are in the past.
+    if (departureDate < currentDate) {
+      departureDate.setDate(departureDate.getDate() + 1);
+    }
   }
 
-  // Add the walking trip time to the departure time
-  currentDate.setSeconds(currentDate.getSeconds() + walkingDuration);
-  return currentDate.toISOString();
+  const dateString = new Date(departureDate.getTime() + walkingDuration*1000).toISOString();
+  return dateString;
 }
 
 function calculateSecondsToDeparture(trainDepartureTime,walkingDuration){
   let currentDate = new Date();
   let trainDepartureDate = new Date(trainDepartureTime);
 
-  return (trainDepartureDate.getTime() - currentDate.getTime() - walkingDuration);
+  return ((trainDepartureDate.getTime() - currentDate.getTime())/1000 - walkingDuration);
 }
 
 function fetchNextTrainTime(closestStation, destinationStation, departureTime, trainScheduleCallback) {
