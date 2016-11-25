@@ -6,20 +6,18 @@ import {
   TimePickerAndroid
 } from 'react-native';
 
-import Station from '../constants/Station';
-import Button from '../components/Button';
-import Label from '../components/Label';
-import StationPicker from '../components/StationPicker';
+import Station from '../../constants/Station';
+import Button from '../../components/Button';
+import Label from '../../components/Label';
 
-import formatHourMinute from '../utils/formatHourMinute';
-import formatSeconds from '../utils/formatSeconds';
+import formatHourMinute from '../../utils/formatHourMinute';
 
 import {
   dark,
   light,
   backgroundColor,
   margin,
-} from '../styles';
+} from '../../styles';
 
 const stylesheet = StyleSheet.create({
   container: {

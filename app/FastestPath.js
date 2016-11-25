@@ -5,10 +5,10 @@ import { Router, Route } from './router';
 
 import NavigationDrawer from './NavigationDrawer';
 
-import HomeScreen from './screens/HomeScreen';
-import AlertsScreen from './screens/AlertsScreen';
-import FeedbackScreen from './screens/FeedbackScreen';
-import SettingsScreen from './screens/SettingsScreen';
+import HomeScreen from './screens/Home/index';
+import AlertsScreen from './screens/Alerts';
+import FeedbackScreen from './screens/Feedback';
+import SettingsScreen from './screens/Settings';
 
 import Layout from './components/Layout';
 import Logo from './components/Logo';
