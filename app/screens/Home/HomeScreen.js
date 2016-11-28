@@ -7,6 +7,8 @@ import {
 } from 'react-native';
 
 import Station from '../../constants/Station';
+
+import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
 import Label from '../../components/Label';
 
@@ -215,6 +217,10 @@ const HomeScreen = React.createClass({
         {/*</Button>*/}
 
         {/*{ directions.secondsToDeparture && this.renderTimer() }*/}
+
+<Overlay>
+  <Text style={{color: 'white'}}>Animation Test</Text>
+</Overlay>
 
       </View>
     );

@@ -1,10 +1,12 @@
 import React from 'react';
 import {
+  ActivityIndicator,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import moment from 'moment'
+import moment from 'moment';
 
 import {
   margin,
@@ -20,6 +22,10 @@ const stylesheet = StyleSheet.create({
     paddingVertical,
     paddingHorizontal,
     margin: margin / 2
+  },
+  loadingText: {
+    textAlign: 'center',
+    color: 'white'
   },
   alertBody: {
     color: 'white'
@@ -46,7 +52,12 @@ const AlertsScreen = React.createClass({
   },
 
   renderLoading() {
-    return <Text>Loading...</Text>;
+    return (
+      <View>
+        <ActivityIndicator size="large" />
+        <Text style={stylesheet.loadingText}>Fetching latest alerts...</Text>
+      </View>
+    );
   },
 
   renderList() {
@@ -60,9 +71,9 @@ const AlertsScreen = React.createClass({
         <View style={stylesheet.header}>
           <Text>Latest Alerts</Text>
         </View>
-        <View style={stylesheet.list}>
-          {isLoading ? this.renderLoading() : this.renderList() }
-        </View>
+        <ScrollView style={stylesheet.list}>
+          {isLoading ? this.renderLoading() : this.renderList()}
+        </ScrollView>
       </View>
     );
   }
