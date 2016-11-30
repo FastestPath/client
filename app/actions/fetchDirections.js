@@ -143,7 +143,7 @@ export default function (options) {
           }else {
             const trainDepartureTime = trainScheduleResponse.sequence.arrivals[0].departureTime;
             const secondsToDeparture = calculateSecondsToDeparture(trainDepartureTime, walkingDuration);
-            action = fetchDirectionsResponse({secondsToDeparture});
+            action = fetchDirectionsResponse({secondsToDeparture, trainDepartureTime, walkingDuration});
 
             PushNotification.localNotificationSchedule({
               message: "Its time to leave for your train!!",
