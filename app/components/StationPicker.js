@@ -1,52 +1,54 @@
 import React from 'react';
-import { Picker, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 import Station from '../constants/Station'
 
-function renderStationItems() {
- return Object.keys(Station).map(function(key) {
-   const station = Station[key];
-   return <Picker.Item label={station.name} value={key} key={key} />
- });
-}
-
 const styles = StyleSheet.create({
-  container: {
-    width: 200,
-    color: "white"
+  stations: {
+    flex: 1
+  },
+  view: {
+    height: 50
+  },
+  text: {
+    color: 'white'
+  },
+  selectedText: {
+    color: 'yellow' // TODO
   }
 });
 
-const StationPicker = React.createClass({
+const StationPicker = ({ selectedStation, onSelect }) => {
+  const stations = Object.keys(Station);
+  return (
+    <View style={styles.stations}>
+      {stations.map((value) => {
+        return (
+          <StationItem
+            key={value}
+            value={value}
+            isSelected={value === selectedStation}
+            onSelect={onSelect}
+          />
+        );
+      })}
+    </View>
+  );
+};
 
-  propTypes: {
-    onValueChange: React.PropTypes.func,
-    defaultText: React.PropTypes.string,
-    selectedValue: React.PropTypes.string
-  },
+const StationItem = ({ value, isSelected, onSelect }) => {
+  const station = Station[value];
 
-  getDefaultProps() {
-    return {
-      onValueChange: function(e) {},
-      defaultText: '',
-      selectedValue: null
-    };
-  },
+  const viewStyle = isSelected ? [styles.view, styles.selected] : [styles.view];
+  const textStyle = isSelected ? [styles.text, styles.selectedText] : [styles.text];
 
-  render() {
-    const { selectedValue, defaultValue } = this.props;
-
-    return (
-      <Picker
-        style={styles.container}
-        selectedValue={selectedValue}
-        onValueChange={this.props.onValueChange}
-        prompt={defaultValue}
-      >
-        { renderStationItems() }
-      </Picker>
-    );
-  }
-});
+  return (
+    <TouchableHighlight key={value} onPress={() => onSelect(station)}>
+      <View style={viewStyle}>
+        <Text style={textStyle}>{station.name}</Text>
+      </View>
+    </TouchableHighlight>
+  );
+};
 
 export default StationPicker;

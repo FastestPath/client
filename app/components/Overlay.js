@@ -46,7 +46,7 @@ const Overlay = React.createClass({
     }).start();
   },
 
-  closeModal() {
+  close() {
     Animated.timing(this.state.offset, {
       duration: this.props.duration,
       toValue: height

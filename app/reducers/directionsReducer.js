@@ -3,6 +3,9 @@ import {
 } from '../actions/fetchDirections';
 
 const initialState = Object.freeze({
+  departureStation: undefined,
+  arrivalStation: undefined,
+  showPicker: false,
   directions: {}
 });
 

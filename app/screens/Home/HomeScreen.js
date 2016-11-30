@@ -11,10 +11,10 @@ import Station from '../../constants/Station';
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
 import Label from '../../components/Label';
-import getClosestStation from '../../utils/computeDistance';
 import StationPicker from '../../components/StationPicker'
 
 import formatHourMinute from '../../utils/formatHourMinute';
+import getClosestStation from '../../utils/computeDistance';
 
 import {
   dark,
@@ -29,7 +29,7 @@ const stylesheet = StyleSheet.create({
     backgroundColor,
     margin
   },
- departureRow: {
+  departureRow: {
     flexDirection: 'row'
   },
   welcome: {
@@ -49,7 +49,14 @@ const stylesheet = StyleSheet.create({
 
 const HomeScreen = React.createClass({
 
+  overlay: null,
   watchId: null,
+
+  propTypes: {
+    showPicker: React.PropTypes.bool.isRequired,
+    departureStation: React.PropTypes.instanceOf(Station),
+    arrivalStation: React.PropTypes.instanceOf(Station)
+  },
 
   getInitialState() {
     return {
@@ -58,7 +65,6 @@ const HomeScreen = React.createClass({
       minute: null,
       presetHour: 12,
       presetMinute: 0,
-      selectedStation: null,
       selectedOriginStation: null,
       timePromptText: 'Departure Time (optional)',
       arrivalStationPromptText: 'Please select your destination',
@@ -134,15 +140,36 @@ const HomeScreen = React.createClass({
     const destinationStation = Station[selectedStation] || Station["DEFAULT"];
     const departureTime = { hour, minute };
 
-    this.props.fetchDirections({origin, closestStation, destinationStation, departureTime});
+    this.props.fetchDirections({
+      origin,
+      closestStation,
+      destinationStation,
+      departureTime
+    });
   },
 
+  // TODO
   handleStationChange(value) {
     this.setState({ selectedStation: value });
   },
 
   handleOriginStationChange(value) {
     this.setState({ selectedOriginStation: value });
+  },
+
+  showDeparturePicker() {
+    this.setState({
+      selectedStationType: 'departure',
+      showPicker: true
+    })
+
+  },
+
+  showArrivalPicker() {
+    this.setState({
+      selectedStationType: 'arrival',
+      showPicker: true
+    })
   },
 
   departText(){
@@ -172,15 +199,32 @@ const HomeScreen = React.createClass({
     );
   },
 
-  render() {
-    const directions = this.props.directions;
+  handleDepartureSelect(station) {
+    this.overlay.close();
+    this.setState({ showPicker: false });
+  },
 
-    const { selectedStation, arrivalStationPromptText, departureStationPromptText, closestStation, selectedOriginStation } = this.state;
+  handleArrivalSelect(station) {
+    this.overlay.close();
+    this.setState({ showPicker: false });
+  },
+
+  render() {
+    const { departureStation, arrivalStation } = this.props;
+    const { selectedStationType, showPicker } = this.state;
+
+    let selectedStation = departureStation;
+    let onSelect = (station) => this.handleDepartureSelect(station);
+
+    if (selectedStationType === 'arrival') {
+      selectedStation = arrivalStation;
+      onSelect = (station) => this.handleArrivalSelect(station);
+    }
 
     return (
       <View style={stylesheet.container}>
 
-        <Label text="Departure Time"/>
+        <Label text="Departure Time" />
         <View style={stylesheet.departureRow}>
           <Button
             label="Leave Now"
@@ -204,34 +248,32 @@ const HomeScreen = React.createClass({
             }}/>
         </View>
 
-        <Label text="Departure Station (Closest selected)" />
+        <Label text="Departure Station (Closest selected)"/>
 
-        <StationPicker
-          style={stylesheet.picker}
-          defaultValue={departureStationPromptText}
-          selectedValue={selectedOriginStation || closestStation.name}
-          onValueChange={this.handleOriginStationChange}
+        <Button
+          label="Select Departure Station"
+          style={{ view: stylesheet.picker }}
+          onPress={this.showDeparturePicker}
         />
 
-        <Label text="Arrival Station" />
+        <Label text="Arrival Station"/>
 
-        <StationPicker
-          style={stylesheet.picker}
-          defaultValue={arrivalStationPromptText}
-          selectedValue={selectedStation}
-          onValueChange={this.handleStationChange}
+        <Button
+          label="Select Arrival Station"
+          style={{ view: stylesheet.picker }}
+          onValueChange={this.showArrivalPicker}
         />
 
-        <Button label="Find a Train" onPress={this.handleSubmit} />
-          {/*<Text>*/}
-            {/*Please select your destination*/}
-          {/*</Text>*/}
-          {/*<StationPicker*/}
-            {/*style={stylesheet.picker}*/}
-            {/*defaultValue={stationPromptText}*/}
-            {/*selectedValue={selectedStation}*/}
-            {/*onValueChange={this.handleStationChange}*/}
-          {/*/>*/}
+        <Button label="Find a Train" onPress={this.handleSubmit}/>
+        {/*<Text>*/}
+        {/*Please select your destination*/}
+        {/*</Text>*/}
+        {/*<StationPicker*/}
+        {/*style={stylesheet.picker}*/}
+        {/*defaultValue={stationPromptText}*/}
+        {/*selectedValue={selectedStation}*/}
+        {/*onValueChange={this.handleStationChange}*/}
+        {/*/>*/}
 
         {/*<Button*/}
         {/*onPress={ () => this.showPicker({*/}
@@ -249,11 +291,13 @@ const HomeScreen = React.createClass({
 
         {/*{ directions.secondsToDeparture && this.renderTimer() }*/}
 
-{/*
-<Overlay>
-  <Text style={{color: 'white'}}>Animation Test</Text>
-</Overlay>
-*/}
+        {showPicker && (
+          <Overlay ref={(overlay) => this.overlay = overlay}>
+            <StationPicker
+              selectedStation={selectedStation}
+              onSelect={onSelect}/>
+          </Overlay>
+        )}
 
       </View>
     );

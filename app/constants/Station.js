@@ -1,12 +1,4 @@
 export default {
-  'DEFAULT' : {
-    value: 'THIRTY_THIRD_STREET',
-    name: '33rd Street',
-    location: {
-      latitude: 40.748541,
-      longitude: -73.988553
-    }
-  },
   '33RD_STREET': {
     value: 'THIRTY_THIRD_STREET',
     name: '33rd Street',
