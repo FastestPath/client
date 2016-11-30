@@ -32,7 +32,10 @@ const Layout = React.createClass({
       ...DEFAULTS,
       ...props,
       ref: (layout) => this.layout = layout,
-      renderNavigationView: () => renderNavigationView(dispatch)
+      renderNavigationView: () => renderNavigationView({
+        dispatch,
+        closeDrawer: () => this.closeDrawer()
+      })
     };
 
     return (

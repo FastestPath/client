@@ -47,9 +47,12 @@ const stylesheet = StyleSheet.create({
   }
 });
 
-const NavigationDrawer = (dispatch) => {
+const NavigationDrawer = ({ dispatch, closeDrawer }) => {
 
-  const go = (route) => dispatch(changeRoute(route));
+  const go = (route) => {
+    dispatch(changeRoute(route));
+    closeDrawer();
+  };
 
   return (
     <View style={stylesheet.container}>
