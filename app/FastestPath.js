@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { Router, Route } from './router';
 
@@ -32,11 +32,16 @@ const stylesheet = StyleSheet.create({
 
 const FastestPath = React.createClass({
 
+  propTypes: {
+    isLoading: React.PropTypes.bool.isRequired
+  },
+
   handleHamburgerPress() {
     this.layout.openDrawer();
   },
 
   renderContainer(component, dispatch) {
+    const { isLoading } = this.props;
     return (
       <Layout
         dispatch={dispatch}
@@ -47,6 +52,7 @@ const FastestPath = React.createClass({
         <View style={stylesheet.toolbar}>
           <Hamburger onPress={this.handleHamburgerPress} />
           <Logo />
+          {isLoading && <ActivityIndicator size="small" />}
         </View>
         {component}
       </Layout>

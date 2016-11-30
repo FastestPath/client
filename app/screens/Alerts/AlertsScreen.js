@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -54,7 +53,6 @@ const AlertsScreen = React.createClass({
   renderLoading() {
     return (
       <View>
-        <ActivityIndicator size="large" />
         <Text style={stylesheet.loadingText}>Fetching latest alerts...</Text>
       </View>
     );

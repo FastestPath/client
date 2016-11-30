@@ -5,14 +5,16 @@ const URL = 'http://api.fastestpath.co/alerts';
 
 function fetchAlertsRequest() {
   return {
-    type: ALERTS_REQUEST
+    type: ALERTS_REQUEST,
+    isLoading: true
   };
 }
 
 function fetchAlertsResponse(response) {
   return {
     type: ALERTS_RESPONSE,
-    alerts: response
+    alerts: response,
+    isLoading: false
   };
 }
 
