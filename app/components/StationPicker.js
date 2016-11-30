@@ -12,7 +12,8 @@ function renderStationItems() {
 
 const styles = StyleSheet.create({
   container: {
-    width: 200
+    width: 200,
+    color: "white"
   }
 });
 

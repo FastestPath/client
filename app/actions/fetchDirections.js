@@ -1,5 +1,4 @@
 import env from '../../env';
-import getClosestStation from '../utils/computeDistance';
 import PushNotification from '../utils/pushNotification';
 
 export const DIRECTIONS_REQUEST = 'DIRECTIONS_REQUEST';
@@ -117,11 +116,9 @@ function fetchNextTrainTime(closestStation, destinationStation, departureTime, t
 
 export default function (options) {
   return function (dispatch) {
-    const {origin, destinationStation, departureTime} = options;
+    const {origin, closestStation, destinationStation, departureTime} = options;
 
     dispatch(fetchDirectionsRequest(origin, destinationStation));
-
-    const closestStation = getClosestStation(origin.latitude, origin.longitude);
 
     // PARAMS for Google api
     //   mode: we want this to be walking

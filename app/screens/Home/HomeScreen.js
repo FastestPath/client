@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
-  TimePickerAndroid
+  TimePickerAndroid,
 } from 'react-native';
 
 import Station from '../../constants/Station';
@@ -11,6 +11,8 @@ import Station from '../../constants/Station';
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
 import Label from '../../components/Label';
+import getClosestStation from '../../utils/computeDistance';
+import StationPicker from '../../components/StationPicker'
 
 import formatHourMinute from '../../utils/formatHourMinute';
 
@@ -41,7 +43,7 @@ const stylesheet = StyleSheet.create({
     marginBottom: 30
   },
   picker: {
-    marginBottom: 30
+    marginBottom: 20
   }
 });
 
@@ -57,8 +59,11 @@ const HomeScreen = React.createClass({
       presetHour: 12,
       presetMinute: 0,
       selectedStation: null,
+      selectedOriginStation: null,
       timePromptText: 'Departure Time (optional)',
-      stationPromptText: 'Please select your destination'
+      arrivalStationPromptText: 'Please select your destination',
+      departureStationPromptText: 'Please select your desired origin',
+      closestStation: Station["HOBOKEN"] // TODO testing only!!
     };
   },
 
@@ -66,6 +71,11 @@ const HomeScreen = React.createClass({
     this.watchId = navigator.geolocation.watchPosition((position) => {
       const currentPosition = JSON.stringify(position);
       this.setState({ currentPosition });
+
+      const positionJson = JSON.parse(currentPosition);
+      const coords = positionJson.coords;
+      const closestStation = getClosestStation(coords.latitude, coords.longitude)
+      this.setState({ closestStation });
     });
   },
 
@@ -103,7 +113,9 @@ const HomeScreen = React.createClass({
       currentPosition,
       selectedStation,
       hour,
-      minute
+      minute,
+      closestStation,
+      selectedOriginStation
     } = this.state;
 
     let origin = null;
@@ -122,11 +134,15 @@ const HomeScreen = React.createClass({
     const destinationStation = Station[selectedStation] || Station["DEFAULT"];
     const departureTime = { hour, minute };
 
-    this.props.fetchDirections({origin, destinationStation, departureTime});
+    this.props.fetchDirections({origin, closestStation, destinationStation, departureTime});
   },
 
   handleStationChange(value) {
     this.setState({ selectedStation: value });
+  },
+
+  handleOriginStationChange(value) {
+    this.setState({ selectedOriginStation: value });
   },
 
   departText(){
@@ -143,6 +159,7 @@ const HomeScreen = React.createClass({
     }
   },
 
+
   renderTimer() {
     const directions = this.props.directions;
     return (
@@ -158,7 +175,7 @@ const HomeScreen = React.createClass({
   render() {
     const directions = this.props.directions;
 
-    const { selectedStation, stationPromptText } = this.state;
+    const { selectedStation, arrivalStationPromptText, departureStationPromptText, closestStation, selectedOriginStation } = this.state;
 
     return (
       <View style={stylesheet.container}>
@@ -187,9 +204,23 @@ const HomeScreen = React.createClass({
             }}/>
         </View>
 
-        <Label text="Departure Station" />
+        <Label text="Departure Station (Closest selected)" />
+
+        <StationPicker
+          style={stylesheet.picker}
+          defaultValue={departureStationPromptText}
+          selectedValue={selectedOriginStation || closestStation.name}
+          onValueChange={this.handleOriginStationChange}
+        />
 
         <Label text="Arrival Station" />
+
+        <StationPicker
+          style={stylesheet.picker}
+          defaultValue={arrivalStationPromptText}
+          selectedValue={selectedStation}
+          onValueChange={this.handleStationChange}
+        />
 
         <Button label="Find a Train" onPress={this.handleSubmit} />
           {/*<Text>*/}
@@ -218,9 +249,11 @@ const HomeScreen = React.createClass({
 
         {/*{ directions.secondsToDeparture && this.renderTimer() }*/}
 
+{/*
 <Overlay>
   <Text style={{color: 'white'}}>Animation Test</Text>
 </Overlay>
+*/}
 
       </View>
     );
