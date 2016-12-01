@@ -22,7 +22,6 @@ const stylesheet = StyleSheet.create({
   },
   toolbar: {
     flex: 0,
-    height: 50,
     paddingHorizontal: grid,
     paddingVertical: grid,
     flexDirection: 'row',

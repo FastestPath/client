@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
+import { margin, paddingVertical, paddingHorizontal } from '../styles';
+
 import Station from '../constants/Station'
 
 const styles = StyleSheet.create({
@@ -8,10 +10,13 @@ const styles = StyleSheet.create({
     flex: 1
   },
   view: {
-    height: 50
+    height: 50,
+    justifyContent: 'center',
+    margin
   },
   text: {
-    color: 'white'
+    color: 'white',
+    fontSize: 24,
   },
   selectedText: {
     color: 'yellow' // TODO

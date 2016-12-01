@@ -27,7 +27,7 @@ const stylesheet = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor,
-    margin
+    marginHorizontal: margin
   },
   departureRow: {
     flexDirection: 'row'
@@ -38,18 +38,22 @@ const stylesheet = StyleSheet.create({
     textAlign: 'center',
     margin: 40
   },
-  instructions: {
-    textAlign: 'center',
-    marginBottom: 30
-  },
   picker: {
     marginBottom: 20
+  },
+  stationTitle: {
+    color: 'white',
+    fontSize: 16
   }
 });
+
+const DEPARTURE = DEPARTURE;
+const ARRIVAL = ARRIVAL;
 
 const HomeScreen = React.createClass({
 
   overlay: null,
+
   watchId: null,
 
   propTypes: {
@@ -60,143 +64,23 @@ const HomeScreen = React.createClass({
 
   getInitialState() {
     return {
-      currentPosition: null,
-      hour: null,
-      minute: null,
-      presetHour: 12,
-      presetMinute: 0,
-      selectedOriginStation: null,
-      timePromptText: 'Departure Time (optional)',
-      arrivalStationPromptText: 'Please select your destination',
-      departureStationPromptText: 'Please select your desired origin',
-      closestStation: Station["HOBOKEN"] // TODO testing only!!
+      showPicker: false,
+      selectedStationType: DEPARTURE
     };
-  },
-
-  componentDidMount() {
-    this.watchId = navigator.geolocation.watchPosition((position) => {
-      const currentPosition = JSON.stringify(position);
-      this.setState({ currentPosition });
-
-      const positionJson = JSON.parse(currentPosition);
-      const coords = positionJson.coords;
-      const closestStation = getClosestStation(coords.latitude, coords.longitude)
-      this.setState({ closestStation });
-    });
-  },
-
-  componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchId);
-  },
-
-  handleHamburgerPress() {
-    this.layout.open();
-  },
-
-  showPicker: async function (options) {
-    try {
-      const { action, minute, hour } = await TimePickerAndroid.open(options);
-
-      if (action === TimePickerAndroid.timeSetAction) {
-        return this.setState({
-          timeText: formatHourMinute(hour, minute),
-          hour,
-          minute
-        });
-      }
-
-      if (action === TimePickerAndroid.dismissedAction) {
-        return this.setState({ timeText: 'dismissed' });
-      }
-
-    } catch ({ code, message }) {
-      console.warn(`Error in example: `, message);
-    }
-  },
-
-  handleSubmit() {
-    const {
-      currentPosition,
-      selectedStation,
-      hour,
-      minute,
-      closestStation,
-      selectedOriginStation
-    } = this.state;
-
-    let origin = null;
-
-    if (currentPosition) {
-      const positionJson = JSON.parse(currentPosition);
-      origin = positionJson.coords;
-    } else {
-      // TODO this is for testing, remove when done, handle error when location not found
-      origin = {
-        latitude: 40.735,
-        longitude: -74.027
-      }
-    }
-
-    const destinationStation = Station[selectedStation] || Station["DEFAULT"];
-    const departureTime = { hour, minute };
-
-    this.props.fetchDirections({
-      origin,
-      closestStation,
-      destinationStation,
-      departureTime
-    });
-  },
-
-  // TODO
-  handleStationChange(value) {
-    this.setState({ selectedStation: value });
-  },
-
-  handleOriginStationChange(value) {
-    this.setState({ selectedOriginStation: value });
   },
 
   showDeparturePicker() {
     this.setState({
-      selectedStationType: 'departure',
+      selectedStationType: DEPARTURE,
       showPicker: true
     })
-
   },
 
   showArrivalPicker() {
     this.setState({
-      selectedStationType: 'arrival',
+      selectedStationType: ARRIVAL,
       showPicker: true
     })
-  },
-
-  departText(){
-    const {
-      hour,
-      minute,
-      timeText
-    } = this.state;
-
-    if (hour && minute) {
-      return 'Leave at ' + timeText;
-    } else {
-      return 'Leave ASAP'
-    }
-  },
-
-
-  renderTimer() {
-    const directions = this.props.directions;
-    return (
-      <View>
-        <Button label="Cancel"/>
-        <Text style={stylesheet.instructions}>
-          Leave in {directions.secondsToDeparture} to catch your train
-        </Text>
-      </View>
-    );
   },
 
   handleDepartureSelect(station) {
@@ -209,16 +93,22 @@ const HomeScreen = React.createClass({
     this.setState({ showPicker: false });
   },
 
+  handleSubmit() {
+
+  },
+
   render() {
     const { departureStation, arrivalStation } = this.props;
     const { selectedStationType, showPicker } = this.state;
 
     let selectedStation = departureStation;
     let onSelect = (station) => this.handleDepartureSelect(station);
+    let stationTitle = 'Select Depature Station';
 
-    if (selectedStationType === 'arrival') {
+    if (selectedStationType === ARRIVAL) {
       selectedStation = arrivalStation;
       onSelect = (station) => this.handleArrivalSelect(station);
+      stationTitle = 'Select Arrival Station'
     }
 
     return (
@@ -261,41 +151,17 @@ const HomeScreen = React.createClass({
         <Button
           label="Select Arrival Station"
           style={{ view: stylesheet.picker }}
-          onValueChange={this.showArrivalPicker}
+          onPress={this.showArrivalPicker}
         />
 
         <Button label="Find a Train" onPress={this.handleSubmit}/>
-        {/*<Text>*/}
-        {/*Please select your destination*/}
-        {/*</Text>*/}
-        {/*<StationPicker*/}
-        {/*style={stylesheet.picker}*/}
-        {/*defaultValue={stationPromptText}*/}
-        {/*selectedValue={selectedStation}*/}
-        {/*onValueChange={this.handleStationChange}*/}
-        {/*/>*/}
-
-        {/*<Button*/}
-        {/*onPress={ () => this.showPicker({*/}
-        {/*hour: this.state.hour || this.state.presetHour,*/}
-        {/*minute: this.state.minute || this.state.presetMinute,*/}
-        {/*})}*/}
-        {/*style={stylesheet.button}*/}
-        {/*>*/}
-        {/*{this.state.timePromptText}*/}
-        {/*</Button>*/}
-
-        {/*<Button onPress={this.handleSubmit}>*/}
-        {/*{this.departText()}*/}
-        {/*</Button>*/}
-
-        {/*{ directions.secondsToDeparture && this.renderTimer() }*/}
 
         {showPicker && (
           <Overlay ref={(overlay) => this.overlay = overlay}>
             <StationPicker
               selectedStation={selectedStation}
-              onSelect={onSelect}/>
+              onSelect={onSelect}
+            />
           </Overlay>
         )}
 
@@ -305,3 +171,133 @@ const HomeScreen = React.createClass({
 });
 
 export default HomeScreen;
+
+
+  //
+  // getInitialState() {
+  //   return {
+  //     currentPosition: null,
+  //     hour: null,
+  //     minute: null,
+  //     presetHour: 12,
+  //     presetMinute: 0,
+  //     selectedOriginStation: null,
+  //     timePromptText: 'Departure Time (optional)',
+  //     arrivalStationPromptText: 'Please select your destination',
+  //     departureStationPromptText: 'Please select your desired origin',
+  //     closestStation: Station["HOBOKEN"] // TODO testing only!!
+  //   };
+  // },
+  //
+  // componentDidMount() {
+  //   this.watchId = navigator.geolocation.watchPosition((position) => {
+  //     const currentPosition = JSON.stringify(position);
+  //     this.setState({ currentPosition });
+  //
+  //     const positionJson = JSON.parse(currentPosition);
+  //     const coords = positionJson.coords;
+  //     const closestStation = getClosestStation(coords.latitude, coords.longitude)
+  //     this.setState({ closestStation });
+  //   });
+  // },
+  //
+  // componentWillUnmount() {
+  //   navigator.geolocation.clearWatch(this.watchId);
+  // },
+  //
+  // handleHamburgerPress() {
+  //   this.layout.open();
+  // },
+  //
+  // showPicker: async function (options) {
+  //   try {
+  //     const { action, minute, hour } = await TimePickerAndroid.open(options);
+  //
+  //     if (action === TimePickerAndroid.timeSetAction) {
+  //       return this.setState({
+  //         timeText: formatHourMinute(hour, minute),
+  //         hour,
+  //         minute
+  //       });
+  //     }
+  //
+  //     if (action === TimePickerAndroid.dismissedAction) {
+  //       return this.setState({ timeText: 'dismissed' });
+  //     }
+  //
+  //   } catch ({ code, message }) {
+  //     console.warn(`Error in example: `, message);
+  //   }
+  // },
+  //
+  // handleSubmit() {
+  //   const {
+  //     currentPosition,
+  //     selectedStation,
+  //     hour,
+  //     minute,
+  //     closestStation,
+  //     selectedOriginStation
+  //   } = this.state;
+  //
+  //   let origin = null;
+  //
+  //   if (currentPosition) {
+  //     const positionJson = JSON.parse(currentPosition);
+  //     origin = positionJson.coords;
+  //   } else {
+  //     // TODO this is for testing, remove when done, handle error when location not found
+  //     origin = {
+  //       latitude: 40.735,
+  //       longitude: -74.027
+  //     }
+  //   }
+  //
+  //   const destinationStation = Station[selectedStation] || Station["DEFAULT"];
+  //   const departureTime = { hour, minute };
+  //
+  //   this.props.fetchDirections({
+  //     origin,
+  //     closestStation,
+  //     destinationStation,
+  //     departureTime
+  //   });
+  // },
+  //
+  // // TODO
+  // handleStationChange(value) {
+  //   this.setState({ selectedStation: value });
+  // },
+  //
+  // handleOriginStationChange(value) {
+  //   this.setState({ selectedOriginStation: value });
+  // },
+  //
+ //
+  // departText(){
+  //   const {
+  //     hour,
+  //     minute,
+  //     timeText
+  //   } = this.state;
+  //
+  //   if (hour && minute) {
+  //     return 'Leave at ' + timeText;
+  //   } else {
+  //     return 'Leave ASAP'
+  //   }
+  // },
+  //
+  //
+  // renderTimer() {
+  //   const directions = this.props.directions;
+  //   return (
+  //     <View>
+  //       <Button label="Cancel"/>
+  //       <Text style={stylesheet.instructions}>
+  //         Leave in {directions.secondsToDeparture} to catch your train
+  //       </Text>
+  //     </View>
+  //   );
+  // },
+
