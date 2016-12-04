@@ -8,6 +8,8 @@ import {
 
 import Station from '../../constants/Station';
 
+import changeStation from '../../actions/changeStation';
+
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
 import Label from '../../components/Label';
@@ -41,14 +43,17 @@ const stylesheet = StyleSheet.create({
   picker: {
     marginBottom: 20
   },
+  description: {
+    color: 'white'
+  },
   stationTitle: {
     color: 'white',
     fontSize: 16
   }
 });
 
-const DEPARTURE = DEPARTURE;
-const ARRIVAL = ARRIVAL;
+const DEPARTURE = 'departure';
+const ARRIVAL = 'arrival';
 
 const HomeScreen = React.createClass({
 
@@ -58,8 +63,8 @@ const HomeScreen = React.createClass({
 
   propTypes: {
     showPicker: React.PropTypes.bool.isRequired,
-    departureStation: React.PropTypes.instanceOf(Station),
-    arrivalStation: React.PropTypes.instanceOf(Station)
+    departureStation: React.PropTypes.string,
+    arrivalStation: React.PropTypes.string,
   },
 
   getInitialState() {
@@ -84,13 +89,17 @@ const HomeScreen = React.createClass({
   },
 
   handleDepartureSelect(station) {
+    const { dispatch } = this.props;
+    dispatch(changeStation(station, DEPARTURE));
     this.overlay.close();
-    this.setState({ showPicker: false });
+    setTimeout(() => this.setState({ showPicker: false }), 1000);
   },
 
   handleArrivalSelect(station) {
+    const { dispatch } = this.props;
+    dispatch(changeStation(station, ARRIVAL));
     this.overlay.close();
-    this.setState({ showPicker: false });
+    setTimeout(() => this.setState({ showPicker: false }), 1000);
   },
 
   handleSubmit() {
@@ -117,7 +126,7 @@ const HomeScreen = React.createClass({
         <Label text="Departure Time" />
         <View style={stylesheet.departureRow}>
           <Button
-            label="Leave Now"
+            label="Leave At"
             style={{
               view: {
                 marginRight: 0,
@@ -126,7 +135,7 @@ const HomeScreen = React.createClass({
               }
             }}/>
           <Button
-            label="Arrive At"
+            label="Arrive By"
             style={{
               view: {
                 marginLeft: 0,
@@ -138,16 +147,15 @@ const HomeScreen = React.createClass({
             }}/>
         </View>
 
-        <Label text="Departure Station (Closest selected)"/>
-
+        <Label text="Departure Station"/>
         <Button
           label="Select Departure Station"
           style={{ view: stylesheet.picker }}
           onPress={this.showDeparturePicker}
         />
+        <Text style={stylesheet.description}>Closest station is selected by default.</Text>
 
         <Label text="Arrival Station"/>
-
         <Button
           label="Select Arrival Station"
           style={{ view: stylesheet.picker }}

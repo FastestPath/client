@@ -42,15 +42,15 @@ const StationPicker = ({ selectedStation, onSelect }) => {
 };
 
 const StationItem = ({ value, isSelected, onSelect }) => {
-  const station = Station[value];
+  const { name } = Station[value];
 
   const viewStyle = isSelected ? [styles.view, styles.selected] : [styles.view];
   const textStyle = isSelected ? [styles.text, styles.selectedText] : [styles.text];
 
   return (
-    <TouchableHighlight key={value} onPress={() => onSelect(station)}>
+    <TouchableHighlight key={value} onPress={() => onSelect(value)}>
       <View style={viewStyle}>
-        <Text style={textStyle}>{station.name}</Text>
+        <Text style={textStyle}>{name}</Text>
       </View>
     </TouchableHighlight>
   );

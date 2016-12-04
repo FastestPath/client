@@ -11,7 +11,7 @@ import {
 const stylesheet = StyleSheet.create({
   text: {
     color: 'white',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: 'bold',
     marginVertical: grid / 2
   }

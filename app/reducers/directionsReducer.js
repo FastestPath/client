@@ -1,6 +1,5 @@
-import {
-  DIRECTIONS_REQUEST, DIRECTIONS_RESPONSE
-} from '../actions/fetchDirections';
+import { DIRECTIONS_REQUEST, DIRECTIONS_RESPONSE } from '../actions/fetchDirections';
+import { CHANGE_STATION } from '../actions/changeStation';
 
 const initialState = Object.freeze({
   departureStation: undefined,
@@ -11,6 +10,11 @@ const initialState = Object.freeze({
 
 export default function directionsReducer(state = initialState, action = {}) {
   switch (action.type) {
+    case CHANGE_STATION:
+      return {
+        ...state,
+        ...action
+      };
     case DIRECTIONS_REQUEST:
       return {
         ...state,
