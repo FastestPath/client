@@ -2,7 +2,7 @@ import Station from '../constants/Station';
 
 function toRadians(degrees) {
   return degrees * (Math.PI/180);
-};
+}
 
 function computeDistance(lat1, lon1, lat2, lon2) {
   var R = 6371e3; // meters
@@ -17,9 +17,9 @@ function computeDistance(lat1, lon1, lat2, lon2) {
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
   return (R * c);
-};
+}
 
-export default function getClosestStation(lat, lon){
+export default function(lat, lon){
   var min = null;
   var closestStation = null;
 
@@ -34,7 +34,5 @@ export default function getClosestStation(lat, lon){
       }
   });
 
-  return closestStation;
-};
-
-
+  return closestStation.value;
+}

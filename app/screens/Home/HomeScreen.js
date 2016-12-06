@@ -8,15 +8,13 @@ import {
 
 import Station from '../../constants/Station';
 
+import changePosition from '../../actions/changePosition';
 import changeStation from '../../actions/changeStation';
 
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
 import Label from '../../components/Label';
 import StationPicker from '../../components/StationPicker'
-
-import formatHourMinute from '../../utils/formatHourMinute';
-import getClosestStation from '../../utils/computeDistance';
 
 import {
   dark,
@@ -63,6 +61,7 @@ const HomeScreen = React.createClass({
 
   propTypes: {
     showPicker: React.PropTypes.bool.isRequired,
+    closestStation: React.PropTypes.string,
     departureStation: React.PropTypes.string,
     arrivalStation: React.PropTypes.string,
   },
@@ -72,6 +71,14 @@ const HomeScreen = React.createClass({
       showPicker: false,
       selectedStationType: DEPARTURE
     };
+  },
+
+  componentDidMount() {
+    this.watchId = navigator.geolocation.watchPosition(this.handlePositionChange);
+  },
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchId);
   },
 
   showDeparturePicker() {
@@ -88,18 +95,26 @@ const HomeScreen = React.createClass({
     })
   },
 
+  hidePicker() {
+    this.overlay.close();
+    setTimeout(() => this.setState({ showPicker: false }), 1000);
+  },
+
+  handlePositionChange(position) {
+    const { dispatch } = this.props;
+    dispatch(changePosition(position));
+  },
+
   handleDepartureSelect(station) {
     const { dispatch } = this.props;
     dispatch(changeStation(station, DEPARTURE));
-    this.overlay.close();
-    setTimeout(() => this.setState({ showPicker: false }), 1000);
+    this.hidePicker();
   },
 
   handleArrivalSelect(station) {
     const { dispatch } = this.props;
     dispatch(changeStation(station, ARRIVAL));
-    this.overlay.close();
-    setTimeout(() => this.setState({ showPicker: false }), 1000);
+    this.hidePicker();
   },
 
   handleSubmit() {
@@ -107,12 +122,19 @@ const HomeScreen = React.createClass({
   },
 
   render() {
-    const { departureStation, arrivalStation } = this.props;
+    let { closestStation, departureStation, arrivalStation } = this.props;
     const { selectedStationType, showPicker } = this.state;
+
+    if (!departureStation && closestStation) {
+      departureStation = closestStation;
+    }
 
     let selectedStation = departureStation;
     let onSelect = (station) => this.handleDepartureSelect(station);
-    let stationTitle = 'Select Depature Station';
+    let stationTitle = 'Select Departure Station';
+
+    const departureStationLabel = departureStation ? Station[departureStation].name : 'Select Departure Station';
+    const arrivalStationLabel = arrivalStation ? Station[arrivalStation].name : 'Select Arrival Station';
 
     if (selectedStationType === ARRIVAL) {
       selectedStation = arrivalStation;
@@ -149,7 +171,7 @@ const HomeScreen = React.createClass({
 
         <Label text="Departure Station"/>
         <Button
-          label="Select Departure Station"
+          label={departureStationLabel}
           style={{ view: stylesheet.picker }}
           onPress={this.showDeparturePicker}
         />
@@ -157,7 +179,7 @@ const HomeScreen = React.createClass({
 
         <Label text="Arrival Station"/>
         <Button
-          label="Select Arrival Station"
+          label={arrivalStationLabel}
           style={{ view: stylesheet.picker }}
           onPress={this.showArrivalPicker}
         />
@@ -196,22 +218,7 @@ export default HomeScreen;
   //     closestStation: Station["HOBOKEN"] // TODO testing only!!
   //   };
   // },
-  //
-  // componentDidMount() {
-  //   this.watchId = navigator.geolocation.watchPosition((position) => {
-  //     const currentPosition = JSON.stringify(position);
-  //     this.setState({ currentPosition });
-  //
-  //     const positionJson = JSON.parse(currentPosition);
-  //     const coords = positionJson.coords;
-  //     const closestStation = getClosestStation(coords.latitude, coords.longitude)
-  //     this.setState({ closestStation });
-  //   });
-  // },
-  //
-  // componentWillUnmount() {
-  //   navigator.geolocation.clearWatch(this.watchId);
-  // },
+
   //
   // handleHamburgerPress() {
   //   this.layout.open();
