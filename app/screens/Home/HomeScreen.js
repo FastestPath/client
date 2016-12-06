@@ -3,12 +3,14 @@ import {
   StyleSheet,
   Text,
   View,
-  TimePickerAndroid,
+  TimePickerAndroid
 } from 'react-native';
+import moment from 'moment';
 
 import Station from '../../constants/Station';
 
 import changePosition from '../../actions/changePosition';
+import changeTarget from '../../actions/changeTarget';
 import changeStation from '../../actions/changeStation';
 
 import Overlay from '../../components/Overlay';
@@ -17,9 +19,12 @@ import Label from '../../components/Label';
 import StationPicker from '../../components/StationPicker'
 
 import {
+  blue,
   dark,
   light,
   backgroundColor,
+  paddingHorizontal,
+  paddingVertical,
   margin,
 } from '../../styles';
 
@@ -32,11 +37,14 @@ const stylesheet = StyleSheet.create({
   departureRow: {
     flexDirection: 'row'
   },
-  welcome: {
-    fontFamily: 'enzo',
-    fontSize: 26,
-    textAlign: 'center',
-    margin: 40
+  targetRow: {
+    backgroundColor: 'white',
+    paddingHorizontal,
+    paddingVertical,
+    marginVertical: margin
+  },
+  targetDescription: {
+    color: 'black' // TODO
   },
   picker: {
     marginBottom: 20
@@ -60,15 +68,16 @@ const HomeScreen = React.createClass({
   watchId: null,
 
   propTypes: {
-    showPicker: React.PropTypes.bool.isRequired,
     closestStation: React.PropTypes.string,
     departureStation: React.PropTypes.string,
     arrivalStation: React.PropTypes.string,
+    targetType: React.PropTypes.oneOf([DEPARTURE, ARRIVAL]).isRequired,
+    targetDate: React.PropTypes.instanceOf(Date),
   },
 
   getInitialState() {
     return {
-      showPicker: false,
+      showStationPicker: false,
       selectedStationType: DEPARTURE
     };
   },
@@ -84,20 +93,32 @@ const HomeScreen = React.createClass({
   showDeparturePicker() {
     this.setState({
       selectedStationType: DEPARTURE,
-      showPicker: true
+      showStationPicker: true
     })
   },
 
   showArrivalPicker() {
     this.setState({
       selectedStationType: ARRIVAL,
-      showPicker: true
+      showStationPicker: true
     })
   },
 
-  hidePicker() {
+  async showTimePicker(targetType) {
+    const { dispatch } = this.props;
+    const { action, hour, minute } = await TimePickerAndroid.open();
+
+    if (action === TimePickerAndroid.timeSetAction) {
+      const targetDate = new Date();
+      targetDate.setHours(hour);
+      targetDate.setMinutes(minute);
+      dispatch(changeTarget(targetDate, targetType));
+    }
+  },
+
+  hideStationPicker() {
     this.overlay.close();
-    setTimeout(() => this.setState({ showPicker: false }), 1000);
+    setTimeout(() => this.setState({ showStationPicker: false }), 1000);
   },
 
   handlePositionChange(position) {
@@ -108,144 +129,16 @@ const HomeScreen = React.createClass({
   handleDepartureSelect(station) {
     const { dispatch } = this.props;
     dispatch(changeStation(station, DEPARTURE));
-    this.hidePicker();
+    this.hideStationPicker();
   },
 
   handleArrivalSelect(station) {
     const { dispatch } = this.props;
     dispatch(changeStation(station, ARRIVAL));
-    this.hidePicker();
+    this.hideStationPicker();
   },
 
   handleSubmit() {
-
-  },
-
-  render() {
-    let { closestStation, departureStation, arrivalStation } = this.props;
-    const { selectedStationType, showPicker } = this.state;
-
-    if (!departureStation && closestStation) {
-      departureStation = closestStation;
-    }
-
-    let selectedStation = departureStation;
-    let onSelect = (station) => this.handleDepartureSelect(station);
-    let stationTitle = 'Select Departure Station';
-
-    const departureStationLabel = departureStation ? Station[departureStation].name : 'Select Departure Station';
-    const arrivalStationLabel = arrivalStation ? Station[arrivalStation].name : 'Select Arrival Station';
-
-    if (selectedStationType === ARRIVAL) {
-      selectedStation = arrivalStation;
-      onSelect = (station) => this.handleArrivalSelect(station);
-      stationTitle = 'Select Arrival Station'
-    }
-
-    return (
-      <View style={stylesheet.container}>
-
-        <Label text="Departure Time" />
-        <View style={stylesheet.departureRow}>
-          <Button
-            label="Leave At"
-            style={{
-              view: {
-                marginRight: 0,
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0
-              }
-            }}/>
-          <Button
-            label="Arrive By"
-            style={{
-              view: {
-                marginLeft: 0,
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                backgroundColor: light
-              },
-              text: { color: dark }
-            }}/>
-        </View>
-
-        <Label text="Departure Station"/>
-        <Button
-          label={departureStationLabel}
-          style={{ view: stylesheet.picker }}
-          onPress={this.showDeparturePicker}
-        />
-        <Text style={stylesheet.description}>Closest station is selected by default.</Text>
-
-        <Label text="Arrival Station"/>
-        <Button
-          label={arrivalStationLabel}
-          style={{ view: stylesheet.picker }}
-          onPress={this.showArrivalPicker}
-        />
-
-        <Button label="Find a Train" onPress={this.handleSubmit}/>
-
-        {showPicker && (
-          <Overlay ref={(overlay) => this.overlay = overlay}>
-            <StationPicker
-              selectedStation={selectedStation}
-              onSelect={onSelect}
-            />
-          </Overlay>
-        )}
-
-      </View>
-    );
-  }
-});
-
-export default HomeScreen;
-
-
-  //
-  // getInitialState() {
-  //   return {
-  //     currentPosition: null,
-  //     hour: null,
-  //     minute: null,
-  //     presetHour: 12,
-  //     presetMinute: 0,
-  //     selectedOriginStation: null,
-  //     timePromptText: 'Departure Time (optional)',
-  //     arrivalStationPromptText: 'Please select your destination',
-  //     departureStationPromptText: 'Please select your desired origin',
-  //     closestStation: Station["HOBOKEN"] // TODO testing only!!
-  //   };
-  // },
-
-  //
-  // handleHamburgerPress() {
-  //   this.layout.open();
-  // },
-  //
-  // showPicker: async function (options) {
-  //   try {
-  //     const { action, minute, hour } = await TimePickerAndroid.open(options);
-  //
-  //     if (action === TimePickerAndroid.timeSetAction) {
-  //       return this.setState({
-  //         timeText: formatHourMinute(hour, minute),
-  //         hour,
-  //         minute
-  //       });
-  //     }
-  //
-  //     if (action === TimePickerAndroid.dismissedAction) {
-  //       return this.setState({ timeText: 'dismissed' });
-  //     }
-  //
-  //   } catch ({ code, message }) {
-  //     console.warn(`Error in example: `, message);
-  //   }
-  // },
-  //
-  // handleSubmit() {
   //   const {
   //     currentPosition,
   //     selectedStation,
@@ -277,18 +170,110 @@ export default HomeScreen;
   //     destinationStation,
   //     departureTime
   //   });
-  // },
-  //
-  // // TODO
-  // handleStationChange(value) {
-  //   this.setState({ selectedStation: value });
-  // },
-  //
-  // handleOriginStationChange(value) {
-  //   this.setState({ selectedOriginStation: value });
-  // },
-  //
- //
+  },
+
+  render() {
+    let { closestStation, targetDate, targetType, departureStation, arrivalStation } = this.props;
+    const { arriveBy, selectedStationType, showStationPicker } = this.state;
+
+    // default departure station to closest station if available
+    if (!departureStation && closestStation) {
+      departureStation = closestStation;
+    }
+
+    const departureStationLabel = departureStation ? Station[departureStation].name : 'Select Departure Station';
+    const arrivalStationLabel = arrivalStation ? Station[arrivalStation].name : 'Select Arrival Station';
+
+    // TODO: extract to functional component, add X to clear
+    let targetLabel = '';
+    let targetDescription = '';
+    if (targetDate) {
+      targetLabel = 'Arrival Time';
+      targetDescription = 'Arrive ' + moment(targetDate).fromNow();
+      if (targetType === DEPARTURE) {
+        targetLabel = 'Departure Time';
+        targetDescription = 'Depart ' + moment(targetDate).fromNow();
+      }
+    }
+
+    let selectedStation = departureStation;
+    let onSelect = (station) => this.handleDepartureSelect(station);
+    let stationTitle = 'Select Departure Station';
+
+    if (selectedStationType === ARRIVAL) {
+      selectedStation = arrivalStation;
+      onSelect = (station) => this.handleArrivalSelect(station);
+      stationTitle = 'Select Arrival Station'
+    }
+
+    return (
+      <View style={stylesheet.container}>
+
+        <Label text={targetLabel} />
+        <View style={stylesheet.departureRow}>
+          <Button
+            label="Leave At"
+            onPress={() => this.showTimePicker(DEPARTURE)}
+            style={{
+              view: {
+                marginRight: 0,
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+              }
+            }}/>
+          <Button
+            label="Arrive By"
+            onPress={() => this.showTimePicker(ARRIVAL)}
+            style={{
+              view: {
+                marginLeft: 0,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+                backgroundColor: light
+              },
+              text: { color: dark }
+            }}/>
+        </View>
+
+        {targetDate && (
+          <View style={stylesheet.targetRow}>
+            <Text style={stylesheet.targetDescription}>{targetDescription}</Text>
+          </View>
+        )}
+
+        <Label text="Departure Station"/>
+        <Button
+          label={departureStationLabel}
+          style={{ view: stylesheet.picker }}
+          onPress={this.showDeparturePicker}
+        />
+        <Text style={stylesheet.description}>Closest station is selected by default.</Text>
+
+        <Label text="Arrival Station"/>
+        <Button
+          label={arrivalStationLabel}
+          style={{ view: stylesheet.picker }}
+          onPress={this.showArrivalPicker}
+        />
+
+        <Button label="Find a Train" onPress={this.handleSubmit}/>
+
+        {showStationPicker && (
+          <Overlay ref={(overlay) => this.overlay = overlay}>
+            <StationPicker
+              selectedStation={selectedStation}
+              onSelect={onSelect}
+            />
+          </Overlay>
+        )}
+
+      </View>
+    );
+  }
+});
+
+export default HomeScreen;
+
   // departText(){
   //   const {
   //     hour,
