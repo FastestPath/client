@@ -5,7 +5,6 @@ import {
   View,
   TimePickerAndroid
 } from 'react-native';
-import moment from 'moment';
 
 import Station from '../../constants/Station';
 
@@ -16,6 +15,7 @@ import changeStation from '../../actions/changeStation';
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
 import Label from '../../components/Label';
+import DepartureTime from '../../components/DepartureTime';
 import StationPicker from '../../components/StationPicker'
 
 import {
@@ -55,6 +55,9 @@ const stylesheet = StyleSheet.create({
   stationTitle: {
     color: 'white',
     fontSize: 16
+  },
+  submitContainer: {
+    flex: 1
   }
 });
 
@@ -138,43 +141,48 @@ const HomeScreen = React.createClass({
     this.hideStationPicker();
   },
 
+  handleDepartureTimeClear() {
+    const { dispatch, targetType } = this.props;
+    dispatch(changeTarget(null, targetType));
+  },
+
   handleSubmit() {
-  //   const {
-  //     currentPosition,
-  //     selectedStation,
-  //     hour,
-  //     minute,
-  //     closestStation,
-  //     selectedOriginStation
-  //   } = this.state;
-  //
-  //   let origin = null;
-  //
-  //   if (currentPosition) {
-  //     const positionJson = JSON.parse(currentPosition);
-  //     origin = positionJson.coords;
-  //   } else {
-  //     // TODO this is for testing, remove when done, handle error when location not found
-  //     origin = {
-  //       latitude: 40.735,
-  //       longitude: -74.027
-  //     }
-  //   }
-  //
-  //   const destinationStation = Station[selectedStation] || Station["DEFAULT"];
-  //   const departureTime = { hour, minute };
-  //
-  //   this.props.fetchDirections({
-  //     origin,
-  //     closestStation,
-  //     destinationStation,
-  //     departureTime
-  //   });
+    //   const {
+    //     currentPosition,
+    //     selectedStation,
+    //     hour,
+    //     minute,
+    //     closestStation,
+    //     selectedOriginStation
+    //   } = this.state;
+    //
+    //   let origin = null;
+    //
+    //   if (currentPosition) {
+    //     const positionJson = JSON.parse(currentPosition);
+    //     origin = positionJson.coords;
+    //   } else {
+    //     // TODO this is for testing, remove when done, handle error when location not found
+    //     origin = {
+    //       latitude: 40.735,
+    //       longitude: -74.027
+    //     }
+    //   }
+    //
+    //   const destinationStation = Station[selectedStation] || Station["DEFAULT"];
+    //   const departureTime = { hour, minute };
+    //
+    //   this.props.fetchDirections({
+    //     origin,
+    //     closestStation,
+    //     destinationStation,
+    //     departureTime
+    //   });
   },
 
   render() {
     let { closestStation, targetDate, targetType, departureStation, arrivalStation } = this.props;
-    const { arriveBy, selectedStationType, showStationPicker } = this.state;
+    const { selectedStationType, showStationPicker } = this.state;
 
     // default departure station to closest station if available
     if (!departureStation && closestStation) {
@@ -184,17 +192,7 @@ const HomeScreen = React.createClass({
     const departureStationLabel = departureStation ? Station[departureStation].name : 'Select Departure Station';
     const arrivalStationLabel = arrivalStation ? Station[arrivalStation].name : 'Select Arrival Station';
 
-    // TODO: extract to functional component, add X to clear
-    let targetLabel = '';
-    let targetDescription = '';
-    if (targetDate) {
-      targetLabel = 'Arrival Time';
-      targetDescription = 'Arrive ' + moment(targetDate).fromNow();
-      if (targetType === DEPARTURE) {
-        targetLabel = 'Departure Time';
-        targetDescription = 'Depart ' + moment(targetDate).fromNow();
-      }
-    }
+    const targetLabel = (targetType === ARRIVAL ? 'Arrival' : 'Departure') + ' Time';
 
     let selectedStation = departureStation;
     let onSelect = (station) => this.handleDepartureSelect(station);
@@ -209,12 +207,15 @@ const HomeScreen = React.createClass({
     return (
       <View style={stylesheet.container}>
 
-        <Label text={targetLabel} />
+        <Label text={targetLabel}/>
         <View style={stylesheet.departureRow}>
           <Button
             label="Leave At"
             onPress={() => this.showTimePicker(DEPARTURE)}
             style={{
+              touchable: {
+                flex: 1
+              },
               view: {
                 marginRight: 0,
                 borderTopRightRadius: 0,
@@ -225,6 +226,9 @@ const HomeScreen = React.createClass({
             label="Arrive By"
             onPress={() => this.showTimePicker(ARRIVAL)}
             style={{
+              touchable: {
+                flex: 1
+              },
               view: {
                 marginLeft: 0,
                 borderTopLeftRadius: 0,
@@ -236,27 +240,31 @@ const HomeScreen = React.createClass({
         </View>
 
         {targetDate && (
-          <View style={stylesheet.targetRow}>
-            <Text style={stylesheet.targetDescription}>{targetDescription}</Text>
-          </View>
+          <DepartureTime
+            date={targetDate}
+            type={targetType}
+            onClose={this.handleDepartureTimeClear}
+          />
         )}
 
-        <Label text="Departure Station"/>
-        <Button
-          label={departureStationLabel}
-          style={{ view: stylesheet.picker }}
-          onPress={this.showDeparturePicker}
-        />
-        <Text style={stylesheet.description}>Closest station is selected by default.</Text>
+          <Label text="Departure Station"/>
+          <Button
+            label={departureStationLabel}
+            style={{ view: stylesheet.picker }}
+            onPress={this.showDeparturePicker}
+          />
+          <Text style={stylesheet.description}>Closest station is selected by default.</Text>
 
-        <Label text="Arrival Station"/>
-        <Button
-          label={arrivalStationLabel}
-          style={{ view: stylesheet.picker }}
-          onPress={this.showArrivalPicker}
-        />
+          <Label text="Arrival Station"/>
+          <Button
+            label={arrivalStationLabel}
+            style={{ view: stylesheet.picker }}
+            onPress={this.showArrivalPicker}
+          />
 
-        <Button label="Find a Train" onPress={this.handleSubmit}/>
+        <View style={stylesheet.submitContainer}>
+          <Button label="Find a Train" onPress={this.handleSubmit}/>
+        </View>
 
         {showStationPicker && (
           <Overlay ref={(overlay) => this.overlay = overlay}>
@@ -273,31 +281,3 @@ const HomeScreen = React.createClass({
 });
 
 export default HomeScreen;
-
-  // departText(){
-  //   const {
-  //     hour,
-  //     minute,
-  //     timeText
-  //   } = this.state;
-  //
-  //   if (hour && minute) {
-  //     return 'Leave at ' + timeText;
-  //   } else {
-  //     return 'Leave ASAP'
-  //   }
-  // },
-  //
-  //
-  // renderTimer() {
-  //   const directions = this.props.directions;
-  //   return (
-  //     <View>
-  //       <Button label="Cancel"/>
-  //       <Text style={stylesheet.instructions}>
-  //         Leave in {directions.secondsToDeparture} to catch your train
-  //       </Text>
-  //     </View>
-  //   );
-  // },
-

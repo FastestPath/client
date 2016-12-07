@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableHighlight,
-} from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+
 import {
   margin,
   blue,
@@ -14,9 +10,6 @@ import {
 } from '../styles';
 
 const stylesheet = StyleSheet.create({
-  touchable: {
-    flex: 1
-  },
   view: {
     backgroundColor: blue,
     paddingVertical,
@@ -51,10 +44,7 @@ const Button = React.createClass({
     const { touchable, view, text} = style;
     const content = children ? children : label;
     return (
-      <TouchableHighlight
-        onPress={onPress}
-        style={[stylesheet.touchable, touchable]}
-      >
+      <TouchableHighlight onPress={onPress} style={[stylesheet.touchable, touchable]}>
         <View style={[stylesheet.view, view]}>
           <Text style={[stylesheet.text, text]}>{content}</Text>
         </View>
