@@ -4,7 +4,7 @@ const parseResponse = (response) => {
   if (response.status === 200) {
     return response.json();
   }
-  throw new Error('Bad response from server.');
+  throw new Error('Bad walking directions response from server.');
 };
 
 const fetchWalkingDirections = ({ origin, destination, mode = 'walking' }) => {
