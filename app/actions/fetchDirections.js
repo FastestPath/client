@@ -1,72 +1,38 @@
-import env from '../../env';
-import PushNotification from '../utils/pushNotification';
+import push from '../utils/pushNotification';
+import fetchWalkingDirections from '../utils/fetchWalkingDirections';
+import calculateWalkingTimeSeconds from '../utils/calculateWalkingTimeSeconds';
+
+import Station from '../constants/Station';
 
 export const DIRECTIONS_REQUEST = 'DIRECTIONS_REQUEST';
 export const DIRECTIONS_RESPONSE = 'DIRECTIONS_RESPONSE';
 export const DIRECTIONS_FAILURE = 'DIRECTIONS_FAILURE';
 
-function fetchDirectionsRequest(origin, destination) {
+const apiRoot = __DEV__ ?
+  `http://192.168.1.153:9000/schedule?` :
+  'http://api.fastestpath.co/schedule?';
+
+const fetchDirectionsRequest = (origin, destination) => {
   return {
     type: DIRECTIONS_REQUEST,
     origin,
     destination
   };
-}
+};
 
-function fetchDirectionsResponse(json) {
+const fetchDirectionsResponse = (response) => {
   return {
     type: DIRECTIONS_RESPONSE,
-    directions: json
+    directions: response
   };
-}
+};
 
-function fetchDirectionsFailure(error) {
+const fetchDirectionsFailure = (error) => {
   return {
     type: DIRECTIONS_FAILURE,
     error
   };
-}
-
-function createGoogleURLFromParams(options){
-  const {mode, origin, destination} = options;
-
-  const destinationParam = destination.latitude + ',' + destination.longitude;
-  const originParam = origin.latitude + ',' + origin.longitude;
-
-  return `https://maps.googleapis.com/maps/api/directions/json?`
-  +`origin=${originParam}`
-  +`&destination=${destinationParam}`
-  +`&mode=${mode}`
-  +`&key=${env.googleDirectionsAPI}`;
-}
-
-function createPathURLFromParams(options){
-  const {closestStation, destinationStation, departureTime} = options;
-
-  const destinationParam = destinationStation.value;
-  const originParam = closestStation.value;
-
-  apiURL = __DEV__ ? `http://192.168.1.153:9000/schedule?` : 'http://api.fastestpath.co/schedule?';
-
-  let url = apiURL
-    +`from=${originParam}`
-    +`&to=${destinationParam}`
-    +`&departAt=${departureTime}`;
-
-  console.log(url);
-  return url;
-}
-
-function calculateDuration(json){
-  if (json.routes.length){
-    return json.routes[0].legs.reduce((prev, next)=>{
-      return prev + next.duration.value;
-    }, 0)
-  } else {
-    //no routes available
-    return null;
-  }
-}
+};
 
 function calculateDepartureTime(walkingDuration, desiredDepartureTime){
   const departureDate = new Date();
@@ -96,7 +62,7 @@ function calculateSecondsToDeparture(trainDepartureTime,walkingDuration){
 
 function fetchNextTrainTime(closestStation, destinationStation, departureTime, trainScheduleCallback) {
 
-  const url = createPathURLFromParams({closestStation, destinationStation, departureTime});
+  const url = createScheduleRequest({ closestStation, destinationStation, departureTime });
 
   return fetch(url)
     .then(function(response) {
@@ -111,56 +77,53 @@ function fetchNextTrainTime(closestStation, destinationStation, departureTime, t
     .catch(function(error) {
       trainScheduleCallback({error});
     })
-
 }
 
-export default function (options) {
-  return function (dispatch) {
-    const {origin, closestStation, destinationStation, departureTime} = options;
-
-    dispatch(fetchDirectionsRequest(origin, destinationStation));
-
-    // PARAMS for Google api
-    //   mode: we want this to be walking
-    //   origin: latitude, longitude
-    //   destination: string for path station
-    const url = createGoogleURLFromParams({origin, destination:closestStation.location, mode: 'walking'});
-
-    return fetch(url)
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.json();
-      })
-      .then((json) => {
-        const walkingDuration = calculateDuration(json);
-
-        const trainScheduleCallback = (trainScheduleResponse) => {
-          let action = null;
-          if (trainScheduleResponse.error){
-            action = fetchDirectionsFailure({error: trainScheduleResponse.error})
-          }else {
-            const trainDepartureTime = trainScheduleResponse.sequence.arrivals[0].departureTime;
-            const secondsToDeparture = calculateSecondsToDeparture(trainDepartureTime, walkingDuration);
-            action = fetchDirectionsResponse({secondsToDeparture, trainDepartureTime, walkingDuration});
-
-            PushNotification.localNotificationSchedule({
-              message: "Its time to leave for your train!!",
-              date: new Date(Date.now() + (secondsToDeparture * 1000))
-            });
-          }
-
-          dispatch(action);
-        };
-
-        const adjustedDepartureTime = calculateDepartureTime(walkingDuration, departureTime)
-        return fetchNextTrainTime(closestStation, destinationStation, adjustedDepartureTime, trainScheduleCallback);
-      })
-      .catch(function(error) {
-        console.log(error);
-        dispatch(fetchDirectionsFailure(error));
-      })
+const trainScheduleCallback = (response, dispatch) => {
+  const { error } = response;
+  if (error) {
+    dispatch(fetchDirectionsFailure({ error }));
+    return;
   }
-}
+
+  const trainDepartureTime = trainScheduleResponse.sequence.arrivals[0].departureTime;
+  const secondsToDeparture = calculateSecondsToDeparture(trainDepartureTime, walkingDuration);
+
+  const now = new Date();
+  const notificationTime = now.setSeconds(now.getSeconds() + secondsToDeparture);
+
+  push.localNotificationSchedule({
+    message: 'Time to leave for your train.',
+    date: notificationTime
+  });
+
+  dispatch(fetchDirectionsResponse({ secondsToDeparture, trainDepartureTime, walkingDuration }));
+};
+
+const handleError = (e, dispatch) => {
+  if (__DEV__) {
+   console.error(e)
+  }
+  dispatch(fetchDirectionsFailure(error));
+};
+
+const fetchDirections = ({ position, origin, destination, targetDate }) => {
+  return (dispatch) => {
+    dispatch(fetchDirectionsRequest(origin, destination));
+
+    fetchWalkingDirections({
+      origin: position,
+      destination: Station[destination].location
+    }).then((response) => {
+      const walkingTimeSeconds = calculateWalkingTimeSeconds(response.routes);
+      const adjustedDepartureTime = calculateDepartureTime(walkingDuration, targetDate);
+    })
+      .then((json) => {
+        return fetchNextTrainTime(origin, destination, adjustedDepartureTime, trainScheduleCallback);
+      })
+      .catch((e) => handleError(e, dispatch));
+  }
+};
+
+export default fetchDirections;
 

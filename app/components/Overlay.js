@@ -29,7 +29,7 @@ const Overlay = React.createClass({
 
   getDefaultProps() {
     return {
-      duration: 1000
+      duration: 200
     };
   },
 

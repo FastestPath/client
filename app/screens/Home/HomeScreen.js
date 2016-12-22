@@ -11,6 +11,7 @@ import Station from '../../constants/Station';
 import changePosition from '../../actions/changePosition';
 import changeTarget from '../../actions/changeTarget';
 import changeStation from '../../actions/changeStation';
+import fetchDirections from '../../actions/fetchDirections';
 
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
@@ -76,6 +77,7 @@ const HomeScreen = React.createClass({
     arrivalStation: React.PropTypes.string,
     targetType: React.PropTypes.oneOf([DEPARTURE, ARRIVAL]).isRequired,
     targetDate: React.PropTypes.instanceOf(Date),
+    position: React.PropTypes.object
   },
 
   getInitialState() {
@@ -120,8 +122,8 @@ const HomeScreen = React.createClass({
   },
 
   hideStationPicker() {
-    this.overlay.close();
-    setTimeout(() => this.setState({ showStationPicker: false }), 1000);
+    setTimeout(() => this.overlay.close(), 0);
+    setTimeout(() => this.setState({ showStationPicker: false }), 500);
   },
 
   handlePositionChange(position) {
@@ -147,37 +149,28 @@ const HomeScreen = React.createClass({
   },
 
   handleSubmit() {
-    //   const {
-    //     currentPosition,
-    //     selectedStation,
-    //     hour,
-    //     minute,
-    //     closestStation,
-    //     selectedOriginStation
-    //   } = this.state;
-    //
-    //   let origin = null;
-    //
-    //   if (currentPosition) {
-    //     const positionJson = JSON.parse(currentPosition);
-    //     origin = positionJson.coords;
-    //   } else {
-    //     // TODO this is for testing, remove when done, handle error when location not found
-    //     origin = {
-    //       latitude: 40.735,
-    //       longitude: -74.027
-    //     }
-    //   }
-    //
-    //   const destinationStation = Station[selectedStation] || Station["DEFAULT"];
-    //   const departureTime = { hour, minute };
-    //
-    //   this.props.fetchDirections({
-    //     origin,
-    //     closestStation,
-    //     destinationStation,
-    //     departureTime
-    //   });
+    let {
+      dispatch,
+      position,
+      departureStation,
+      arrivalStation,
+      targetDate
+    } = this.props;
+
+    if (!position && __DEV__) {
+      console.log('Using mock location.');
+      position = {
+        latitude: 40.735,
+        longitude: -74.027
+      };
+    }
+
+    dispatch(fetchDirections({
+      position,
+      origin: departureStation,
+      destination: arrivalStation,
+      targetDate
+    }));
   },
 
   render() {
