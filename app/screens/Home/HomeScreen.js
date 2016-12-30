@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  BackAndroid,
   TimePickerAndroid
 } from 'react-native';
 
@@ -87,11 +88,16 @@ const HomeScreen = React.createClass({
     };
   },
 
+  componentWillMount() {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBackPress);
+  },
+
   componentDidMount() {
     this.watchId = navigator.geolocation.watchPosition(this.handlePositionChange);
   },
 
   componentWillUnmount() {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBackPress);
     navigator.geolocation.clearWatch(this.watchId);
   },
 
@@ -124,6 +130,15 @@ const HomeScreen = React.createClass({
   hideStationPicker() {
     setTimeout(() => this.overlay.close(), 0);
     setTimeout(() => this.setState({ showStationPicker: false }), 500);
+  },
+
+  handleBackPress() {
+    const { showStationPicker } = this.state;
+    if (showStationPicker) {
+      this.hideStationPicker();
+      return true;
+    }
+    return false;
   },
 
   handlePositionChange(position) {
