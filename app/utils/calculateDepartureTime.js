@@ -2,8 +2,8 @@ const calculateDepartureTime = (walkingTimeSeconds, departAt) => {
   const now = new Date();
 
   const leaveAt = new Date(now);
-  leaveAt.setHours(departAt.hour);
-  departAt.setMinutes(departAt.minute);
+  leaveAt.setHours(departAt.getHours());
+  departAt.setMinutes(departAt.getMinutes());
 
   // TODO: not sure if this is necessary
   // Avoid going back in the past. Add a day if we are in the past.

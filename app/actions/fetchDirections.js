@@ -14,21 +14,24 @@ const fetchDirectionsRequest = (origin, destination) => {
   return {
     type: DIRECTIONS_REQUEST,
     origin,
-    destination
+    destination,
+    isLoading: true,
   };
 };
 
 const fetchDirectionsResponse = (response) => {
   return {
     type: DIRECTIONS_RESPONSE,
-    directions: response
+    directions: response,
+    isLoading: false
   };
 };
 
 const fetchDirectionsFailure = (error) => {
   return {
     type: DIRECTIONS_FAILURE,
-    error
+    error,
+    isLoading: false
   };
 };
 
@@ -67,7 +70,7 @@ const handleError = (e, dispatch) => {
   dispatch(fetchDirectionsFailure(error));
 };
 
-const fetchDirections = ({ position, origin, destination, targetDate }) => {
+const fetchDirections = ({ position, origin, destination, targetDate = new Date() }) => {
   return (dispatch) => {
     dispatch(fetchDirectionsRequest(origin, destination));
 
@@ -90,4 +93,3 @@ const fetchDirections = ({ position, origin, destination, targetDate }) => {
 };
 
 export default fetchDirections;
-

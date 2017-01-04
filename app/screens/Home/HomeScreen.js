@@ -78,7 +78,8 @@ const HomeScreen = React.createClass({
     arrivalStation: React.PropTypes.string,
     targetType: React.PropTypes.oneOf([DEPARTURE, ARRIVAL]).isRequired,
     targetDate: React.PropTypes.instanceOf(Date),
-    position: React.PropTypes.object
+    position: React.PropTypes.object,
+    isFetching: React.PropTypes.bool
   },
 
   getInitialState() {
@@ -189,7 +190,7 @@ const HomeScreen = React.createClass({
   },
 
   render() {
-    let { closestStation, targetDate, targetType, departureStation, arrivalStation } = this.props;
+    let { closestStation, targetDate, targetType, departureStation, arrivalStation, isFetching } = this.props;
     const { selectedStationType, showStationPicker } = this.state;
 
     // default departure station to closest station if available
@@ -280,6 +281,12 @@ const HomeScreen = React.createClass({
               selectedStation={selectedStation}
               onSelect={onSelect}
             />
+          </Overlay>
+        )}
+
+        {isFetching && (
+          <Overlay ref={(overlay) => this.overlay = overlay}>
+            <Text style={stylesheet.description}>Fetching directions.</Text>
           </Overlay>
         )}
 
