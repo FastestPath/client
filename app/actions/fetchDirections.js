@@ -42,30 +42,9 @@ function calculateSecondsToDeparture(trainDepartureTime,walkingDuration){
   return ((trainDepartureDate.getTime() - currentDate.getTime())/1000 - walkingDuration);
 }
 
-const trainScheduleCallback = (response, dispatch) => {
-  const { error } = response;
-  if (error) {
-    handleError(error, dispatch);
-    return;
-  }
-
-  const trainDepartureTime = trainScheduleResponse.sequence.arrivals[0].departureTime;
-  const secondsToDeparture = calculateSecondsToDeparture(trainDepartureTime, walkingDuration);
-
-  const now = new Date();
-  const notificationTime = now.setSeconds(now.getSeconds() + secondsToDeparture);
-
-  push.localNotificationSchedule({
-    message: 'Time to leave for your train.',
-    date: notificationTime
-  });
-
-  dispatch(fetchDirectionsResponse({ secondsToDeparture, trainDepartureTime, walkingDuration }));
-};
-
-const handleError = (e, dispatch) => {
+const handleError = (error, dispatch) => {
   if (__DEV__) {
-   console.error(e)
+   console.error(error);
   }
   dispatch(fetchDirectionsFailure(error));
 };
@@ -74,19 +53,36 @@ const fetchDirections = ({ position, origin, destination, targetDate = new Date(
   return (dispatch) => {
     dispatch(fetchDirectionsRequest(origin, destination));
 
+    let walkingTimeSeconds = 0;
+
     fetchWalkingDirections({
       origin: position,
       destination: Station[destination].location
     })
     .then((response) => {
-      const walkingTimeSeconds = calculateWalkingTimeSeconds(response.routes);
+      walkingTimeSeconds = calculateWalkingTimeSeconds(response.routes);
       const departAt = calculateDepartureTime(walkingTimeSeconds, targetDate);
       return fetchTrainSchedule({ origin, destination, departAt });
     })
     .then((response) => {
-      // TODO...
-      const departAt = response.departAt;
-      return fetchNextTrainTime(origin, destination, adjustedDepartureTime, trainScheduleCallback);
+      const { arrivals = [] } = response.sequence;
+      const firstArrival = arrivals[0];
+      if (!firstArrival) {
+        throw new Error('No train schedule found.');
+      }
+
+      const trainDepartureTime = firstArrival.departureTime;
+      const secondsToDeparture = calculateDepartureTime(walkingTimeSeconds, trainDepartureTime);
+
+      const now = new Date();
+      const notificationTime = now.setSeconds(now.getSeconds() + secondsToDeparture);
+
+      push.localNotificationSchedule({
+        message: 'Time to leave for your train.',
+        date: notificationTime
+      });
+
+      dispatch(fetchDirectionsResponse({ secondsToDeparture, trainDepartureTime, walkingTimeSeconds }));
     })
     .catch((e) => handleError(e, dispatch));
   }

@@ -1,5 +1,5 @@
 export default {
-  '33RD_STREET': {
+  'THIRTY_THIRD_STREET': {
     value: 'THIRTY_THIRD_STREET',
     name: '33rd Street',
     location: {
@@ -7,7 +7,7 @@ export default {
       longitude: -73.988553
     }
   },
-  '23RD_STREET': {
+  'TWENTY_THIRD_STREET': {
     value: 'TWENTY_THIRD_STREET',
     name: '23rd Street' ,
     location: {
@@ -15,7 +15,7 @@ export default {
       longitude: -73.99263
     }
   },
-  '14TH_STREET': {
+  'FOURTEENTH_STREET': {
     value: 'FOURTEENTH_STREET',
     name: '14th Street',
     location: {
@@ -23,7 +23,7 @@ export default {
       longitude: -73.996911
     }
   },
-  '9TH_STREET': {
+  'NINTH_STREET': {
     value: 'NINTH_STREET',
     name: '9th Street',
     location: {

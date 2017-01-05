@@ -1,14 +1,12 @@
 const apiRoot = __DEV__ ?
-  `http://192.168.1.153:9000/schedule?` :
+  'http://10.6.76.100:9000/schedule?' :
   'http://api.fastestpath.co/schedule?';
 
 const createScheduleRequest = ({ origin, destination, departAt }) => {
-  const originParam = origin.value;
-  const destinationParam = destination.value;
-
+  departAt = departAt.toJSON();
   return apiRoot
-    +`from=${originParam}`
-    +`&to=${destinationParam}`
+    +`from=${origin}`
+    +`&to=${destination}`
     +`&departAt=${departAt}`;
 };
 
