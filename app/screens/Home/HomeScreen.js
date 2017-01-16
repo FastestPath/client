@@ -4,15 +4,18 @@ import {
   Text,
   View,
   BackAndroid,
-  TimePickerAndroid
+  TimePickerAndroid,
+  ToastAndroid
 } from 'react-native';
 
 import Station from '../../constants/Station';
+import { DEPARTURE, ARRIVAL } from '../../constants/StationType';
+import { LEAVE_AT, ARRIVE_BY } from '../../constants/LeaveArriveType';
 
 import changePosition from '../../actions/changePosition';
-import changeTarget from '../../actions/changeTarget';
 import changeStation from '../../actions/changeStation';
-import fetchDirections from '../../actions/fetchDirections';
+import changeLeaveArrive from '../../actions/changeLeaveArrive';
+import calculateLeaveAt from '../../actions/calculateLeaveAt';
 
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
@@ -63,9 +66,6 @@ const stylesheet = StyleSheet.create({
   }
 });
 
-const DEPARTURE = 'departure';
-const ARRIVAL = 'arrival';
-
 const HomeScreen = React.createClass({
 
   overlay: null,
@@ -76,10 +76,11 @@ const HomeScreen = React.createClass({
     closestStation: React.PropTypes.string,
     departureStation: React.PropTypes.string,
     arrivalStation: React.PropTypes.string,
-    targetType: React.PropTypes.oneOf([DEPARTURE, ARRIVAL]).isRequired,
-    targetDate: React.PropTypes.instanceOf(Date),
+    leaveArriveType: React.PropTypes.oneOf([LEAVE_AT, ARRIVE_BY]).isRequired,
+    leaveArriveTime: React.PropTypes.instanceOf(Date),
+    leaveAt: React.PropTypes.instanceOf(Date),
     position: React.PropTypes.object,
-    isFetching: React.PropTypes.bool
+    isFetching: React.PropTypes.bool.isRequired
   },
 
   getInitialState() {
@@ -116,15 +117,15 @@ const HomeScreen = React.createClass({
     })
   },
 
-  async showTimePicker(targetType) {
+  async showTimePicker(leaveArriveType) {
     const { dispatch } = this.props;
     const { action, hour, minute } = await TimePickerAndroid.open();
 
     if (action === TimePickerAndroid.timeSetAction) {
-      const targetDate = new Date();
-      targetDate.setHours(hour);
-      targetDate.setMinutes(minute);
-      dispatch(changeTarget(targetDate, targetType));
+      const leaveArriveTime = new Date();
+      leaveArriveTime.setHours(hour);
+      leaveArriveTime.setMinutes(minute);
+      dispatch(changeLeaveArrive(leaveArriveType, leaveArriveTime));
     }
   },
 
@@ -160,37 +161,42 @@ const HomeScreen = React.createClass({
   },
 
   handleDepartureTimeClear() {
-    const { dispatch, targetType } = this.props;
-    dispatch(changeTarget(null, targetType));
+    const { dispatch, leaveArriveType } = this.props;
+    dispatch(changeLeaveArrive(leaveArriveType, null));
   },
 
   handleSubmit() {
-    let {
+    const {
       dispatch,
       position,
       departureStation,
       arrivalStation,
-      targetDate
+      leaveArriveTime
     } = this.props;
 
-    if (!position && __DEV__) {
-      console.log('Using mock location.');
-      position = {
-        latitude: 40.735,
-        longitude: -74.027
-      };
+    if (!position) {
+      ToastAndroid.show('Your location is needed.', ToastAndroid.SHORT);
+      return;
     }
 
-    dispatch(fetchDirections({
+    dispatch(calculateLeaveAt({
       position,
       origin: departureStation,
       destination: arrivalStation,
-      targetDate
+      leaveArriveTime // TODO: only support LEAVE_AT for now
     }));
   },
 
   render() {
-    let { closestStation, targetDate, targetType, departureStation, arrivalStation, isFetching } = this.props;
+    let {
+      position,
+      closestStation,
+      leaveArriveTime,
+      stationType,
+      departureStation,
+      arrivalStation,
+      isFetching
+    } = this.props;
     const { selectedStationType, showStationPicker } = this.state;
 
     // default departure station to closest station if available
@@ -198,10 +204,12 @@ const HomeScreen = React.createClass({
       departureStation = closestStation;
     }
 
+    const submitLabel = position ? 'Find a Train' : 'Waiting on Location';
+
     const departureStationLabel = departureStation ? Station[departureStation].name : 'Select Departure Station';
     const arrivalStationLabel = arrivalStation ? Station[arrivalStation].name : 'Select Arrival Station';
 
-    const targetLabel = (targetType === ARRIVAL ? 'Arrival' : 'Departure') + ' Time';
+    const targetLabel = (stationType === ARRIVAL ? 'Arrival' : 'Departure') + ' Time';
 
     let selectedStation = departureStation;
     let onSelect = (station) => this.handleDepartureSelect(station);
@@ -248,10 +256,10 @@ const HomeScreen = React.createClass({
             }}/>
         </View>
 
-        {targetDate && (
+        {leaveArriveTime && (
           <DepartureTime
-            date={targetDate}
-            type={targetType}
+            date={leaveArriveTime}
+            type={stationType}
             onClose={this.handleDepartureTimeClear}
           />
         )}
@@ -272,7 +280,7 @@ const HomeScreen = React.createClass({
           />
 
         <View style={stylesheet.submitContainer}>
-          <Button label="Find a Train" onPress={this.handleSubmit}/>
+          <Button label={submitLabel} onPress={this.handleSubmit}/>
         </View>
 
         {showStationPicker && (

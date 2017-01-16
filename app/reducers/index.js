@@ -3,7 +3,7 @@ import routerReducer from './routerReducer';
 import alertsReducer from './alertsReducer';
 import feedbackReducer from './feedbackReducer';
 import settingsReducer from './settingsReducer';
-import directionsReducer from './directionsReducer';
+import leaveAtReducer from './leaveAtReducer';
 
 export default {
   global: globalReducer,
@@ -11,6 +11,6 @@ export default {
   alerts: alertsReducer,
   feedback: feedbackReducer,
   settings: settingsReducer,
-  directions: directionsReducer
+  leaveAt: leaveAtReducer
 };
 

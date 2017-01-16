@@ -1,27 +1,40 @@
-import { DIRECTIONS_REQUEST, DIRECTIONS_RESPONSE, DIRECTIONS_FAILURE } from '../actions/fetchDirections';
+import { LEAVE_AT_REQUEST, LEAVE_AT_RESPONSE, LEAVE_AT_FAILURE } from '../actions/calculateLeaveAt';
 import { CHANGE_POSITION } from '../actions/changePosition';
-import { CHANGE_TARGET } from '../actions/changeTarget';
+import { CHANGE_LEAVE_ARRIVE } from '../actions/changeLeaveArrive';
 import { CHANGE_STATION } from '../actions/changeStation';
+
+import { LEAVE_AT } from '../constants/LeaveArriveType';
+
+const getPosition = () => {
+  if (__DEV__) {
+    console.log('Using mock location.');
+    return {
+      latitude: 40.735,
+      longitude: -74.027
+    };
+  }
+  return undefined;
+};
 
 const initialState = Object.freeze({
   departureStation: undefined,
   arrivalStation: undefined,
   closestStation: undefined,
-  targetType: 'departure', // TODO: constant
-  targetDate: undefined,
-  position: undefined,
-  directions: {},
+  leaveArriveType: LEAVE_AT,
+  leaveArriveTime: undefined,
+  position: getPosition(),
+  leaveAt: undefined,
   isFetching: false
 });
 
-export default function directionsReducer(state = initialState, action = {}) {
+const leaveAtReducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case CHANGE_POSITION:
       return {
         ...state,
         ...action
       };
-    case CHANGE_TARGET:
+    case CHANGE_LEAVE_ARRIVE:
       return {
         ...state,
         ...action
@@ -31,18 +44,18 @@ export default function directionsReducer(state = initialState, action = {}) {
         ...state,
         ...action
       };
-    case DIRECTIONS_REQUEST:
+    case LEAVE_AT_REQUEST:
       return {
         ...state,
         isFetching: true
       };
-    case DIRECTIONS_RESPONSE:
+    case LEAVE_AT_RESPONSE:
       return {
         ...state,
         isFetching: false,
         directions: action.directions
       };
-    case DIRECTIONS_FAILURE:
+    case LEAVE_AT_FAILURE:
       return {
         ...state,
         isFetching: false
@@ -50,4 +63,6 @@ export default function directionsReducer(state = initialState, action = {}) {
     default:
       return state;
   }
-}
+};
+
+export default leaveAtReducer;

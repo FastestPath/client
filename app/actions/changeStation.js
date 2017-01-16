@@ -1,7 +1,9 @@
+import { ARRIVAL } from '../constants/StationType';
+
 export const CHANGE_STATION = 'CHANGE_STATION';
 
 function changeStation(station, type) {
-  const stationObject = type === 'arrival' ?
+  const stationObject = type === ARRIVAL ?
       { arrivalStation: station } :
       { departureStation: station };
 

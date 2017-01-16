@@ -7,8 +7,8 @@ const parseResponse = (response) => {
   throw new Error('Bad walking directions response from server.');
 };
 
-const fetchWalkingDirections = ({ origin, destination, mode = 'walking' }) => {
-  const originParam = origin.latitude + ',' + origin.longitude;
+const fetchWalkingDirections = ({ position, destination, mode = 'walking' }) => {
+  const originParam = position.latitude + ',' + position.longitude;
   const destinationParam = destination.latitude + ',' + destination.longitude;
 
   const url = `https://maps.googleapis.com/maps/api/directions/json?`
