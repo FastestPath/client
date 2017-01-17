@@ -1,8 +1,8 @@
 import React from 'react';
 import moment from 'moment';
-import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import CloseButton from './CloseButton';
 
 import {
   dark,
@@ -26,9 +26,6 @@ const styles = StyleSheet.create({
   },
   description: {
     color: dark
-  },
-  close: {
-    color: dark
   }
 });
 
@@ -39,13 +36,7 @@ const DepartureTime = ({ date, type, onClose}) => {
       <View style={styles.descriptionView}>
         <Text style={styles.description}>{description}</Text>
       </View>
-      <TouchableHighlight onPress={onClose}>
-        <Icon
-          name="close"
-          size={23}
-          color="black"
-        />
-      </TouchableHighlight>
+      <CloseButton onPress={onClose} />
     </View>
   );
 };

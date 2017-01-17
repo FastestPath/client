@@ -16,12 +16,7 @@ PushNotification.configure({
   // default: true
   popInitialNotification: true,
 
-  /**
-   * (optional) default: true
-   * - Specified if permissions (ios) and token (android and ios) will requested or not,
-   * - if not, you must call PushNotificationsHandler.requestPermissions() later
-   */
-  requestPermissions: true,
+  requestPermissions: true
 });
 
 export default PushNotification;

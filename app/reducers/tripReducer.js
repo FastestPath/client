@@ -1,4 +1,5 @@
 import { SET_TRIP } from '../actions/setTrip';
+import { CLEAR_TRIP } from '../actions/clearTrip';
 
 const initialState = Object.freeze({
   isSet: false,
@@ -18,6 +19,11 @@ const tripReducer = (state = initialState, action = {}) => {
         ...state,
         ...trip,
         isSet: true
+      };
+
+    case CLEAR_TRIP:
+      return {
+        ...initialState
       };
 
     default:

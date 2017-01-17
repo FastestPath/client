@@ -10,7 +10,10 @@ import {
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import CloseButton from './components/CloseButton';
+
 import changeRoute from './actions/changeRoute';
+import clearTrip from './actions/clearTrip';
 
 import Station from './constants/Station';
 
@@ -31,6 +34,9 @@ const stylesheet = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical,
     paddingHorizontal
+  },
+  textWrapper: {
+    flex: 1
   },
   text: {
     fontSize: 16,
@@ -58,10 +64,15 @@ const NavigationDrawer = ({ dispatch, trip, closeDrawer }) => {
     closeDrawer();
   };
 
+  const handleTripClose = () => {
+    dispatch(clearTrip());
+    closeDrawer();
+  };
+
   return (
     <View style={stylesheet.container}>
       {trip.isSet ?
-        <Item icon="alarm" onPress={() => go('trip')}>To {Station[trip.destination].name}</Item> :
+        <Item icon="alarm" onPress={() => go('trip')} onClose={handleTripClose}>To {Station[trip.destination].name}</Item> :
         <Item icon="directions-subway" onPress={() => go('home')}>Plan a Trip</Item>
       }
       <Item icon="announcement" onPress={() => go('alerts')}>PATH Alerts</Item>
@@ -77,12 +88,15 @@ const NavigationDrawer = ({ dispatch, trip, closeDrawer }) => {
   );
 };
 
-const Item = ({ icon, onPress, children }) => {
+const Item = ({ icon, onPress, onClose, children }) => {
   return (
     <TouchableHighlight onPress={onPress}>
       <View style={stylesheet.item}>
-        <Icon name={icon} size={25} color="white"/>
-        <Text style={stylesheet.text}>{children}</Text>
+        <Icon name={icon} size={25} color="white" />
+        <View style={stylesheet.textWrapper}>
+          <Text style={stylesheet.text}>{children}</Text>
+        </View>
+        {onClose && <CloseButton color="white" onPress={onClose} />}
       </View>
     </TouchableHighlight>
   );
