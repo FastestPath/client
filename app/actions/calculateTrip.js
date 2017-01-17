@@ -37,10 +37,8 @@ const leaveAtFailure = (error) => {
 };
 
 const handleError = (error, dispatch) => {
-  if (__DEV__) {
-   console.error(error);
-  }
   dispatch(leaveAtFailure(error));
+  return Promise.reject(error);
 };
 
 // TODO: only supporting LEAVE_AT for now

@@ -5,6 +5,11 @@ import {
   View
 } from 'react-native';
 
+import changeRoute from '../../actions/changeRoute';
+import clearTrip from '../../actions/clearTrip';
+
+import Button from '../../components/Button';
+
 import {
 } from '../../styles';
 
@@ -33,6 +38,11 @@ const TripScreen = React.createClass({
   },
 
   componentWillUnmount() {
+  },
+
+  handleCancel() {
+    dispatch(clearTrip());
+    // dispatch(changeRoute('home'));
   },
 
   render() {

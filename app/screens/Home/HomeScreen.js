@@ -187,6 +187,11 @@ const HomeScreen = React.createClass({
       leaveArriveTime // TODO: only support LEAVE_AT for now
     })).then((trip) => {
       dispatch(setTrip(trip))
+    }).catch((e) => {
+      ToastAndroid.show('No trips found.', ToastAndroid.SHORT);
+      if (__DEV__) {
+        console.log('No trips found.', e.stack);
+      }
     })
   },
 
