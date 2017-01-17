@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import {
   StyleSheet,
   Text,
@@ -10,10 +11,18 @@ import clearTrip from '../../actions/clearTrip';
 
 import Button from '../../components/Button';
 
+import Station from '../../constants/Station';
+
 import {
 } from '../../styles';
 
 const stylesheet = StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  text: {
+    color: 'white'
+  }
 });
 
 const TripScreen = React.createClass({
@@ -41,14 +50,39 @@ const TripScreen = React.createClass({
   },
 
   handleCancel() {
+    const { dispatch } = this.props;
     dispatch(clearTrip());
-    // dispatch(changeRoute('home'));
+    dispatch(changeRoute('home'));
   },
 
   render() {
+    const {
+      origin,
+      destination,
+      leaveAt,
+      departAt,
+      arriveAt
+    } = this.props;
+
     return (
       <View style={stylesheet.container}>
-        <Text>Trip Screen</Text>
+        <Text style={stylesheet.text}>Origin: {Station[origin].name}</Text>
+        <Text style={stylesheet.text}>Destination: {Station[destination].name}</Text>
+        <Text style={stylesheet.text}>Start walking at: {moment(leaveAt).fromNow()}</Text>
+        <Text style={stylesheet.text}>Train leaves at: {moment(departAt).fromNow()}</Text>
+        <Text style={stylesheet.text}>Train arrives at: {moment(arriveAt).fromNow()}</Text>
+        <Button
+          label="Cancel Trip"
+          onPress={this.handleCancel}
+          style={{
+            touchable: {
+              flex: 1
+            },
+            view: {
+              backgroundColor: 'red'
+            }
+          }}
+        />
       </View>
     );
   }

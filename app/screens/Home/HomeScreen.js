@@ -15,6 +15,7 @@ import { LEAVE_AT, ARRIVE_BY } from '../../constants/LeaveArriveType';
 import setTrip from '../../actions/setTrip';
 import changePosition from '../../actions/changePosition';
 import changeStation from '../../actions/changeStation';
+import changeRoute from '../../actions/changeRoute';
 import changeLeaveArrive from '../../actions/changeLeaveArrive';
 import calculateTrip from '../../actions/calculateTrip';
 
@@ -186,7 +187,8 @@ const HomeScreen = React.createClass({
       destination: arrivalStation,
       leaveArriveTime // TODO: only support LEAVE_AT for now
     })).then((trip) => {
-      dispatch(setTrip(trip))
+      dispatch(setTrip(trip));
+      dispatch(changeRoute('trip'));
     }).catch((e) => {
       ToastAndroid.show('No trips found.', ToastAndroid.SHORT);
       if (__DEV__) {
