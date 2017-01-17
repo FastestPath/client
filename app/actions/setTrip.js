@@ -1,9 +1,9 @@
-export const ADD_TRIP = 'ADD_TRIP';
+export const SET_TRIP = 'SET_TRIP';
 
 const addTrip = (trip) => {
   return (dispatch) => {
     dispatch({
-      type: ADD_TRIP,
+      type: SET_TRIP,
       trip
     });
   }

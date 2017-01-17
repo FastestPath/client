@@ -16,10 +16,10 @@ const reducer = combineReducers(reducers);
 const store = createStoreWithMiddleware(reducer);
 
 const ConnectedFastestPath = connect((state) => {
-  const { global, trips } = state;
+  const { global, trip } = state;
   return {
     ...global,
-    trips
+    trip
   };
 })(FastestPath);
 

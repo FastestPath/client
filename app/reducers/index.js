@@ -4,7 +4,7 @@ import alertsReducer from './alertsReducer';
 import feedbackReducer from './feedbackReducer';
 import leaveAtReducer from './leaveAtReducer';
 import settingsReducer from './settingsReducer';
-import tripsReducer from './tripsReducer';
+import tripReducer from './tripReducer';
 
 export default {
   global: globalReducer,
@@ -13,6 +13,6 @@ export default {
   feedback: feedbackReducer,
   leaveAt: leaveAtReducer,
   settings: settingsReducer,
-  trips: tripsReducer
+  trip: tripReducer
 };
 

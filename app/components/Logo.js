@@ -22,6 +22,10 @@ const stylesheet = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     lineHeight: 24
+  },
+  beta: {
+    fontSize: 12,
+    lineHeight: 18
   }
 });
 
@@ -31,6 +35,7 @@ const Logo = () => {
     <View style={stylesheet.view}>
       <Text style={[stylesheet.text, stylesheet.fastest]}>Fastest</Text>
       <Text style={[stylesheet.text, stylesheet.path]}>PATH</Text>
+      <Text style={[stylesheet.text, stylesheet.beta]}> beta</Text>
     </View>
   );
 };

@@ -12,6 +12,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import changeRoute from './actions/changeRoute';
 
+import Station from './constants/Station';
+
 import {
   margin,
   paddingVertical,
@@ -49,23 +51,19 @@ const stylesheet = StyleSheet.create({
   }
 });
 
-const NavigationDrawer = ({ dispatch, allTrips, closeDrawer }) => {
+const NavigationDrawer = ({ dispatch, trip, closeDrawer }) => {
 
   const go = (route, params) => {
     dispatch(changeRoute(route, params));
     closeDrawer();
   };
 
-  const TripItem = ({ index, destination }) => {
-    return <Item icon="alarm" onPress={() => go('trip', {index})}>{destination}</Item>;
-  };
-
   return (
     <View style={stylesheet.container}>
-
-      {allTrips.map((trip, index) => <TripItem key={index} index={index} {...trip} />)}
-
-      <Item icon="directions-subway" onPress={() => go('home')}>Plan a Trip</Item>
+      {trip.isSet ?
+        <Item icon="alarm" onPress={() => go('trip')}>To {Station[trip.destination].name}</Item> :
+        <Item icon="directions-subway" onPress={() => go('home')}>Plan a Trip</Item>
+      }
       <Item icon="announcement" onPress={() => go('alerts')}>PATH Alerts</Item>
       <Item icon="thumbs-up-down" onPress={() => go('feedback')}>Feedback</Item>
       <Item icon="settings" onPress={() => go('settings')}>Settings</Item>
