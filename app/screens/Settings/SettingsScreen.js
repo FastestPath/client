@@ -15,7 +15,7 @@ const SettingsScreen = React.createClass({
   },
 
   render() {
-    return <Text style={{ color: 'white' }}>Current route: {this.context.route}</Text>;
+    return <Text style={{ textAlign: 'center', color: 'white' }}>Coming soon.</Text>;
   }
 
 });
