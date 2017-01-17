@@ -78,9 +78,9 @@ const NavigationDrawer = React.createClass({
   },
 
   handleTripClose() {
-    const { dispatch, closeDrawer } = this.props;
+    const { dispatch } = this.props;
     dispatch(clearTrip());
-    closeDrawer();
+    this.go('home');
   },
 
   render() {
