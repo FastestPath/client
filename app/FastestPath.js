@@ -48,7 +48,7 @@ const FastestPath = React.createClass({
         dispatch={dispatch}
         trip={trip}
         ref={(layout) => this.layout = layout}
-        renderNavigationView={NavigationDrawer}
+        NavigationView={NavigationDrawer}
         style={stylesheet.layout}
       >
         <View style={stylesheet.toolbar}>

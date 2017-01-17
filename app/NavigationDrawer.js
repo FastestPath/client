@@ -43,6 +43,9 @@ const stylesheet = StyleSheet.create({
     marginLeft: margin,
     color: 'white',
   },
+  selected: {
+    color: 'yellow'
+  },
   spacer: {
    flex: 1
   },
@@ -57,44 +60,62 @@ const stylesheet = StyleSheet.create({
   }
 });
 
-const NavigationDrawer = ({ dispatch, trip, closeDrawer }) => {
+const NavigationDrawer = React.createClass({
 
-  const go = (route, params) => {
+  contextTypes: {
+    route: React.PropTypes.string.isRequired
+  },
+
+  propTypes: {
+    trip: React.PropTypes.object.isRequired,
+    closeDrawer: React.PropTypes.func.isRequired
+  },
+
+  go(route, params) {
+    const { dispatch, closeDrawer } = this.props;
     dispatch(changeRoute(route, params));
     closeDrawer();
-  };
+  },
 
-  const handleTripClose = () => {
+  handleTripClose() {
+    const { dispatch, closeDrawer } = this.props;
     dispatch(clearTrip());
     closeDrawer();
-  };
+  },
 
-  return (
-    <View style={stylesheet.container}>
-      {trip.isSet ?
-        <Item icon="alarm" onPress={() => go('trip')} onClose={handleTripClose}>To {Station[trip.destination].name}</Item> :
-        <Item icon="directions-subway" onPress={() => go('home')}>Plan a Trip</Item>
-      }
-      <Item icon="announcement" onPress={() => go('alerts')}>PATH Alerts</Item>
-      <Item icon="thumbs-up-down" onPress={() => go('feedback')}>Feedback</Item>
-      <Item icon="settings" onPress={() => go('settings')}>Settings</Item>
-      <View style={stylesheet.spacer}/>
-      <View style={stylesheet.footer}>
-        <Text style={[stylesheet.text, stylesheet.copyright]}>
-          Copyright 2016 © Virtuability LLC
-        </Text>
+  render() {
+    const { route } = this.context;
+    const { trip } = this.props;
+
+    return (
+      <View style={stylesheet.container}>
+        {trip.isSet ?
+          <Item icon="alarm" isSelected={route === 'trip'} onPress={() => this.go('trip')} onClose={this.handleTripClose}>
+            To {Station[trip.destination].name}
+          </Item> :
+          <Item icon="directions-subway" isSelected={route === 'home'} onPress={() => this.go('home')}>Plan a Trip</Item>
+        }
+        <Item icon="announcement" isSelected={route === 'alerts'} onPress={() => this.go('alerts')}>PATH Alerts</Item>
+        <Item icon="thumbs-up-down" isSelected={route === 'feedback'} onPress={() => this.go('feedback')}>Feedback</Item>
+        <Item icon="settings" isSelected={route === 'settings'} onPress={() => this.go('settings')}>Settings</Item>
+        <View style={stylesheet.spacer} />
+        <View style={stylesheet.footer}>
+          <Text style={[stylesheet.text, stylesheet.copyright]}>
+            Copyright 2016 © Virtuability LLC
+          </Text>
+        </View>
       </View>
-    </View>
-  );
-};
+    );
+  }
+});
 
-const Item = ({ icon, onPress, onClose, children }) => {
+const Item = ({ icon, isSelected, onPress, onClose, children }) => {
   return (
     <TouchableHighlight onPress={onPress}>
       <View style={stylesheet.item}>
         <Icon name={icon} size={25} color="white" />
         <View style={stylesheet.textWrapper}>
-          <Text style={stylesheet.text}>{children}</Text>
+          <Text style={[stylesheet.text, isSelected ? stylesheet.selected : {}]}>{children}</Text>
         </View>
         {onClose && <CloseButton color="white" onPress={onClose} />}
       </View>

@@ -24,7 +24,7 @@ const Layout = React.createClass({
     const {
       dispatch,
       trip,
-      renderNavigationView,
+      NavigationView,
       children,
       ...props
     } = this.props;
@@ -33,11 +33,7 @@ const Layout = React.createClass({
       ...DEFAULTS,
       ...props,
       ref: (layout) => this.layout = layout,
-      renderNavigationView: () => renderNavigationView({
-        dispatch,
-        trip,
-        closeDrawer: () => this.closeDrawer()
-      })
+      renderNavigationView: () => <NavigationView dispatch={dispatch} trip={trip} closeDrawer={this.closeDrawer} />
     };
 
     return (
