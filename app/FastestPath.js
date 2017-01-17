@@ -5,7 +5,8 @@ import { Router, Route } from './router';
 
 import NavigationDrawer from './NavigationDrawer';
 
-import HomeScreen from './screens/Home/index';
+import TripScreen from './screens/Trip';
+import HomeScreen from './screens/Home';
 import AlertsScreen from './screens/Alerts';
 import FeedbackScreen from './screens/Feedback';
 import SettingsScreen from './screens/Settings';
@@ -32,6 +33,7 @@ const stylesheet = StyleSheet.create({
 const FastestPath = React.createClass({
 
   propTypes: {
+    trips: React.PropTypes.object.isRequired,
     isLoading: React.PropTypes.bool.isRequired
   },
 
@@ -40,10 +42,11 @@ const FastestPath = React.createClass({
   },
 
   renderContainer(component, dispatch) {
-    const { isLoading } = this.props;
+    const { trips, isLoading } = this.props;
     return (
       <Layout
         dispatch={dispatch}
+        allTrips={trips.allTrips}
         ref={(layout) => this.layout = layout}
         renderNavigationView={NavigationDrawer}
         style={stylesheet.layout}
@@ -59,9 +62,14 @@ const FastestPath = React.createClass({
   },
 
   render() {
-    const { directions, actions } = this.props;
+    const { directions, trips, actions } = this.props;
     return (
       <Router container={this.renderContainer}>
+
+        <Route name="trip">
+          <TripScreen trip={trips.activeTrip} />
+        </Route>
+
         <Route name="home">
           <HomeScreen
             directions={directions}

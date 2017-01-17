@@ -12,10 +12,11 @@ import Station from '../../constants/Station';
 import { DEPARTURE, ARRIVAL } from '../../constants/StationType';
 import { LEAVE_AT, ARRIVE_BY } from '../../constants/LeaveArriveType';
 
+import addTrip from '../../actions/addTrip';
 import changePosition from '../../actions/changePosition';
 import changeStation from '../../actions/changeStation';
 import changeLeaveArrive from '../../actions/changeLeaveArrive';
-import calculateLeaveAt from '../../actions/calculateLeaveAt';
+import calculateTrip from '../../actions/calculateTrip';
 
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
@@ -179,12 +180,14 @@ const HomeScreen = React.createClass({
       return;
     }
 
-    dispatch(calculateLeaveAt({
+    dispatch(calculateTrip({
       position,
       origin: departureStation,
       destination: arrivalStation,
       leaveArriveTime // TODO: only support LEAVE_AT for now
-    }));
+    })).then((trip) => {
+      dispatch(addTrip(trip))
+    })
   },
 
   render() {

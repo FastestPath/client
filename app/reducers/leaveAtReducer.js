@@ -1,4 +1,4 @@
-import { LEAVE_AT_REQUEST, LEAVE_AT_RESPONSE, LEAVE_AT_FAILURE } from '../actions/calculateLeaveAt';
+import { LEAVE_AT_REQUEST, LEAVE_AT_RESPONSE, LEAVE_AT_FAILURE } from '../actions/calculateTrip';
 import { CHANGE_POSITION } from '../actions/changePosition';
 import { CHANGE_LEAVE_ARRIVE } from '../actions/changeLeaveArrive';
 import { CHANGE_STATION } from '../actions/changeStation';

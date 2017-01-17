@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import {
   StyleSheet,
   Text,
@@ -47,15 +49,22 @@ const stylesheet = StyleSheet.create({
   }
 });
 
-const NavigationDrawer = ({ dispatch, closeDrawer }) => {
+const NavigationDrawer = ({ dispatch, allTrips, closeDrawer }) => {
 
-  const go = (route) => {
-    dispatch(changeRoute(route));
+  const go = (route, params) => {
+    dispatch(changeRoute(route, params));
     closeDrawer();
+  };
+
+  const TripItem = ({ index, destination }) => {
+    return <Item icon="alarm" onPress={() => go('trip', {index})}>{destination}</Item>;
   };
 
   return (
     <View style={stylesheet.container}>
+
+      {allTrips.map((trip, index) => <TripItem key={index} index={index} {...trip} />)}
+
       <Item icon="directions-subway" onPress={() => go('home')}>Plan a Trip</Item>
       <Item icon="announcement" onPress={() => go('alerts')}>PATH Alerts</Item>
       <Item icon="thumbs-up-down" onPress={() => go('feedback')}>Feedback</Item>

@@ -44,13 +44,13 @@ const handleError = (error, dispatch) => {
 };
 
 // TODO: only supporting LEAVE_AT for now
-const calculateLeaveAt = ({ position, origin, destination, leaveArriveTime = new Date() }) => {
+const calculateTrip = ({ position, origin, destination, leaveArriveTime = new Date() }) => {
   return (dispatch) => {
     dispatch(leaveAtRequest(origin, destination));
 
     let walkingTimeSeconds = 0;
 
-    fetchWalkingDirections({
+    return fetchWalkingDirections({
       position,
       destination: Station[destination].location
     })
@@ -66,8 +66,12 @@ const calculateLeaveAt = ({ position, origin, destination, leaveArriveTime = new
         throw new Error('No train schedule found.');
       }
 
-      const trainDepartureTime = new Date(firstArrival.departureTime);
-      const timeToLeave = calculateTrainDepartureTime(walkingTimeSeconds, trainDepartureTime);
+      const { departureTime, arrivalTime } = firstArrival;
+      const trainDepartureTime = new Date(departureTime);
+      const trainArrivalTime = new Date(arrivalTime);
+
+      const timeToLeave = new Date(trainDepartureTime);
+      timeToLeave.setSeconds(trainDepartureTime.getSeconds() - walkingTimeSeconds);
 
       push.localNotificationSchedule({
         message: 'Time to leave for your train.',
@@ -75,9 +79,17 @@ const calculateLeaveAt = ({ position, origin, destination, leaveArriveTime = new
       });
 
       dispatch(leaveAtResponse());
+
+      return {
+        origin,
+        destination,
+        leaveAt: timeToLeave,
+        departAt: trainDepartureTime,
+        arriveAt: trainArrivalTime
+      };
     })
     .catch((e) => handleError(e, dispatch));
   }
 };
 
-export default calculateLeaveAt;
+export default calculateTrip;
