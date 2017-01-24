@@ -1,4 +1,5 @@
 const apiRoot = __DEV__ ?
+  // tim's ip 'http://192.168.1.153:9000/schedule?'
   'http://10.6.76.100:9000/schedule?' :
   'http://api.fastestpath.co/schedule?';
 

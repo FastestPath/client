@@ -68,8 +68,7 @@ const calculateTrip = ({ position, origin, destination, leaveArriveTime = new Da
       const trainDepartureTime = new Date(departureTime);
       const trainArrivalTime = new Date(arrivalTime);
 
-      const timeToLeave = new Date(trainDepartureTime);
-      timeToLeave.setSeconds(trainDepartureTime.getSeconds() - walkingTimeSeconds);
+      const timeToLeave = new Date(trainDepartureTime.getTime() - walkingTimeSeconds * 1000);
 
       push.localNotificationSchedule({
         message: 'Time to leave for your train.',
