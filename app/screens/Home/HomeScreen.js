@@ -18,6 +18,7 @@ import changeStation from '../../actions/changeStation';
 import changeRoute from '../../actions/changeRoute';
 import changeLeaveArrive from '../../actions/changeLeaveArrive';
 import calculateTrip from '../../actions/calculateTrip';
+import getClosestStation from '../../utils/getClosestStation';
 
 import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
@@ -183,7 +184,7 @@ const HomeScreen = React.createClass({
 
     dispatch(calculateTrip({
       position,
-      origin: departureStation,
+      origin: departureStation || getClosestStation(position.latitude, position.longitude),
       destination: arrivalStation,
       leaveArriveTime // TODO: only support LEAVE_AT for now
     })).then((trip) => {
