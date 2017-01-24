@@ -127,7 +127,7 @@ const HomeScreen = React.createClass({
       const leaveArriveTime = new Date();
       leaveArriveTime.setHours(hour);
       leaveArriveTime.setMinutes(minute);
-      dispatch(changeLeaveArrive(leaveArriveType, leaveArriveTime));
+      dispatch(changeLeaveArrive(leaveArriveTime, leaveArriveType));
     }
   },
 
@@ -164,7 +164,7 @@ const HomeScreen = React.createClass({
 
   handleDepartureTimeClear() {
     const { dispatch, leaveArriveType } = this.props;
-    dispatch(changeLeaveArrive(leaveArriveType, null));
+    dispatch(changeLeaveArrive(null, leaveArriveType));
   },
 
   handleSubmit() {
@@ -238,7 +238,7 @@ const HomeScreen = React.createClass({
         <View style={stylesheet.departureRow}>
           <Button
             label="Leave At"
-            onPress={() => this.showTimePicker(DEPARTURE)}
+            onPress={() => this.showTimePicker(LEAVE_AT)}
             style={{
               touchable: {
                 flex: 1
@@ -251,7 +251,7 @@ const HomeScreen = React.createClass({
             }}/>
           <Button
             label="Arrive By"
-            onPress={() => this.showTimePicker(ARRIVAL)}
+            onPress={() => this.showTimePicker(ARRIVE_BY)}
             style={{
               touchable: {
                 flex: 1
