@@ -50,7 +50,7 @@ const calculateTrip = ({ position, origin, destination, leaveArriveTime = new Da
 
     return fetchWalkingDirections({
       position,
-      destination: Station[origin].location
+      destination: Station[destination].location
     })
     .then((response) => {
       walkingTimeSeconds = calculateWalkingTimeSeconds(response.routes);
@@ -58,17 +58,22 @@ const calculateTrip = ({ position, origin, destination, leaveArriveTime = new Da
       return fetchTrainSchedule({ origin, destination, departAt });
     })
     .then((response) => {
-      const { arrivals = [] } = response.sequence;
+      // TODO: rename arrivals to legs
+      const { arrivals = [] } = response;
       const firstArrival = arrivals[0];
       if (!firstArrival) {
         throw new Error('No train schedule found.');
       }
+      const lastArrival = arrivals[arrivals.length - 1];
 
-      const { departureTime, arrivalTime } = firstArrival;
+      const { departureTime } = firstArrival;
+      const { arrivalTime } = lastArrival;
+
       const trainDepartureTime = new Date(departureTime);
       const trainArrivalTime = new Date(arrivalTime);
 
-      const timeToLeave = new Date(trainDepartureTime.getTime() - walkingTimeSeconds * 1000);
+      const timeToLeave = new Date(trainDepartureTime);
+      timeToLeave.setSeconds(trainDepartureTime.getSeconds() - walkingTimeSeconds);
 
       push.localNotificationSchedule({
         message: 'Time to leave for your train.',
@@ -80,6 +85,7 @@ const calculateTrip = ({ position, origin, destination, leaveArriveTime = new Da
       return {
         origin,
         destination,
+        walkingTimeSeconds,
         leaveAt: timeToLeave,
         departAt: trainDepartureTime,
         arriveAt: trainArrivalTime

@@ -8,7 +8,7 @@ export default function(position) {
     dispatch({
       type: CHANGE_POSITION,
       closestStation: getClosestStation(latitude, longitude),
-      position
+      position: position.coords
     });
   };
 }

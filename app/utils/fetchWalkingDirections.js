@@ -8,6 +8,7 @@ const parseResponse = (response) => {
 };
 
 const fetchWalkingDirections = ({ position, destination, mode = 'walking' }) => {
+
   const originParam = position.latitude + ',' + position.longitude;
   const destinationParam = destination.latitude + ',' + destination.longitude;
 
@@ -16,6 +17,8 @@ const fetchWalkingDirections = ({ position, destination, mode = 'walking' }) => 
     + `&destination=${destinationParam}`
     + `&mode=${mode}`
     + `&key=${env.googleDirectionsAPI}`;
+
+  console.log(url);
 
   return fetch(url)
     .then(parseResponse);

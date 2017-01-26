@@ -30,9 +30,12 @@ const initialState = Object.freeze({
 const leaveAtReducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case CHANGE_POSITION:
+      const { departureStation } = state;
+      const { closestStation } = action;
       return {
         ...state,
-        ...action
+        ...action,
+        departureStation: departureStation || closestStation
       };
     case CHANGE_LEAVE_ARRIVE:
       return {

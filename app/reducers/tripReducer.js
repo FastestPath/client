@@ -5,6 +5,7 @@ const initialState = Object.freeze({
   isSet: false,
   origin: undefined,
   destination: undefined,
+  walkingTimeSeconds: undefined,
   leaveAt: undefined,
   departAt: undefined,
   arriveAt: undefined
