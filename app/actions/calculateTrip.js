@@ -50,10 +50,15 @@ const calculateTrip = ({ position, origin, destination, leaveArriveTime = new Da
 
     return fetchWalkingDirections({
       position,
-      destination: Station[destination].location
+      destination: Station[origin].location
     })
     .then((response) => {
       walkingTimeSeconds = calculateWalkingTimeSeconds(response.routes);
+
+      if (__DEV__) {
+        console.log('Walking time: ' + walkingTimeSeconds + ' seconds');
+      }
+
       const departAt = addSeconds(leaveArriveTime, walkingTimeSeconds);
       return fetchTrainSchedule({ origin, destination, departAt });
     })

@@ -9,8 +9,8 @@ const getPosition = () => {
   if (__DEV__) {
     console.log('Using mock location.');
     return {
-      latitude: 40.735,
-      longitude: -74.027
+      latitude: 40.741382,
+      longitude: -74.02967
     };
   }
   return undefined;
