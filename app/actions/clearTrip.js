@@ -1,4 +1,4 @@
-import push from '../utils/pushNotification';
+import push from '../utils/createPushNotification';
 
 export const CLEAR_TRIP = 'CLEAR_TRIP';
 

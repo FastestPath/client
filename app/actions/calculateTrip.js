@@ -1,10 +1,12 @@
-import push from '../utils/pushNotification';
+import createPushNotification from '../utils/createPushNotification';
 import addSeconds from '../utils/addSeconds';
 
 import fetchWalkingDirections from '../utils/fetchWalkingDirections';
 import fetchTrainSchedule from '../utils/fetchTrainSchedule';
 
 import calculateWalkingTimeSeconds from '../utils/calculateWalkingTimeSeconds';
+
+import changeRoute from '../actions/changeRoute';
 
 import Station from '../constants/Station';
 
@@ -79,6 +81,12 @@ const calculateTrip = ({ position, origin, destination, leaveArriveTime = new Da
 
       const timeToLeave = new Date(trainDepartureTime);
       timeToLeave.setSeconds(trainDepartureTime.getSeconds() - walkingTimeSeconds);
+
+      const push = createPushNotification({
+        onNotification: (notification) => {
+          dispatch(changeRoute('trip'));
+        }
+      });
 
       push.localNotificationSchedule({
         message: 'Time to leave for your train.',
