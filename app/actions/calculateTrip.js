@@ -65,16 +65,10 @@ const calculateTrip = ({ position, origin, destination, leaveArriveTime = new Da
       return fetchTrainSchedule({ origin, destination, departAt });
     })
     .then((response) => {
-      // TODO: rename arrivals to legs
-      const { arrivals = [] } = response;
-      const firstArrival = arrivals[0];
-      if (!firstArrival) {
+      const { departureTime, departureStation, arrivalTime, arrivalStation, stops = [] } = response;
+      if (!departureTime) {
         throw new Error('No train schedule found.');
       }
-      const lastArrival = arrivals[arrivals.length - 1];
-
-      const { departureTime } = firstArrival;
-      const { arrivalTime } = lastArrival;
 
       const trainDepartureTime = new Date(departureTime);
       const trainArrivalTime = new Date(arrivalTime);
