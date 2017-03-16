@@ -31,7 +31,7 @@ const dataSource = new ListView.DataSource({ rowHasChanged });
 const stations = Object.keys(Station);
 const data = dataSource.cloneWithRows(stations);
 
-const StationPicker = ({ selectedStation, disabledStation, onSelect }) => {
+const TimePicker = ({ selectedStation, disabledStation, onSelect }) => {
 
   return (
     <ListView
@@ -78,4 +78,4 @@ const StationItem = ({ value, isSelected, isDisabled, onSelect }) => {
   );
 };
 
-export default StationPicker;
+export default TimePicker;

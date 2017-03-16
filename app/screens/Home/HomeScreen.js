@@ -24,7 +24,8 @@ import Overlay from '../../components/Overlay';
 import Button from '../../components/Button';
 import Label from '../../components/Label';
 import DepartureTime from '../../components/DepartureTime';
-import StationPicker from '../../components/StationPicker'
+import StationPicker from '../../components/StationPicker';
+import StationMap from '../../components/StationMap';
 
 import {
   blue,
@@ -43,7 +44,11 @@ const stylesheet = StyleSheet.create({
     marginHorizontal: margin
   },
   departureRow: {
+    flex: 1,
     flexDirection: 'row'
+  },
+  mapContainer: {
+    flex: 1
   },
   targetRow: {
     backgroundColor: 'white',
@@ -55,17 +60,20 @@ const stylesheet = StyleSheet.create({
     color: 'black' // TODO
   },
   picker: {
-    marginBottom: 20
+    marginBottom: 10
   },
   description: {
-    color: 'white'
+    color: 'white',
+    marginBottom: 5
   },
   stationTitle: {
     color: 'white',
     fontSize: 16
   },
   submitContainer: {
-    flex: 1
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end'
   }
 });
 
@@ -89,6 +97,7 @@ const HomeScreen = React.createClass({
   getInitialState() {
     return {
       showStationPicker: false,
+      showTimePicker: false,
       selectedStationType: DEPARTURE
     };
   },
@@ -223,11 +232,13 @@ const HomeScreen = React.createClass({
     const targetLabel = (stationType === ARRIVAL ? 'Arrival' : 'Departure') + ' Time';
 
     let selectedStation = departureStation;
+    let disabledStation = arrivalStation;
     let onSelect = (station) => this.handleDepartureSelect(station);
     let stationTitle = 'Select Departure Station';
 
     if (selectedStationType === ARRIVAL) {
       selectedStation = arrivalStation;
+      disabledStation = departureStation;
       onSelect = (station) => this.handleArrivalSelect(station);
       stationTitle = 'Select Arrival Station'
     }
@@ -235,10 +246,25 @@ const HomeScreen = React.createClass({
     return (
       <View style={stylesheet.container}>
 
+        <Label text="Departure Station"/>
+        <Button
+          label={departureStationLabel}
+          style={{ view: stylesheet.picker }}
+          onPress={this.showDeparturePicker}
+        />
+        <Text style={stylesheet.description}>Closest station is selected by default.</Text>
+
+        <Label text="Arrival Station"/>
+        <Button
+          label={arrivalStationLabel}
+          style={{ view: stylesheet.picker }}
+          onPress={this.showArrivalPicker}
+        />
+
         <Label text={targetLabel}/>
         <View style={stylesheet.departureRow}>
           <Button
-            label="Leave At"
+            label="Leave In"
             onPress={() => this.showTimePicker(LEAVE_AT)}
             style={{
               touchable: {
@@ -267,6 +293,15 @@ const HomeScreen = React.createClass({
             }}/>
         </View>
 
+        <View style={stylesheet.mapContainer}>
+
+          <StationMap
+            departureStation={departureStation}
+            arrivalStation={arrivalStation}
+          />
+
+        </View>
+
         {leaveArriveTime && (
           <DepartureTime
             date={leaveArriveTime}
@@ -274,21 +309,6 @@ const HomeScreen = React.createClass({
             onClose={this.handleDepartureTimeClear}
           />
         )}
-
-          <Label text="Departure Station"/>
-          <Button
-            label={departureStationLabel}
-            style={{ view: stylesheet.picker }}
-            onPress={this.showDeparturePicker}
-          />
-          <Text style={stylesheet.description}>Closest station is selected by default.</Text>
-
-          <Label text="Arrival Station"/>
-          <Button
-            label={arrivalStationLabel}
-            style={{ view: stylesheet.picker }}
-            onPress={this.showArrivalPicker}
-          />
 
         <View style={stylesheet.submitContainer}>
           <Button label={submitLabel} onPress={this.handleSubmit}/>
@@ -298,6 +318,7 @@ const HomeScreen = React.createClass({
           <Overlay ref={(overlay) => this.overlay = overlay}>
             <StationPicker
               selectedStation={selectedStation}
+              disabledStation={disabledStation}
               onSelect={onSelect}
             />
           </Overlay>

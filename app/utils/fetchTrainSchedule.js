@@ -21,9 +21,7 @@ const parseResponse = (response) => {
 const fetchTrainSchedule = ({ origin, destination, departAt }) => {
   const url = createScheduleRequest({ origin, destination, departAt });
 
-  if (__DEV__) {
-    console.log('Train schedule url:', url);
-  }
+  console.log('Train schedule url:', url);
 
   return fetch(url)
     .then(parseResponse);
