@@ -55,6 +55,9 @@ const createLabels = (data) => {
       key={`text-${index++}`}
       {...coords}
       fill="black"
+      stroke="white"
+      fontSize="21"
+      fontWeight="bold"
     >
       {value}
     </Text>

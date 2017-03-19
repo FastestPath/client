@@ -207,9 +207,27 @@ const HomeScreen = React.createClass({
     })
   },
 
-  render() {
+  renderSubmitButton() {
     let {
       position,
+      departureStation,
+      arrivalStation,
+    } = this.props;
+
+    const submitLabel = !position ? 'Waiting on Location' : 'Find a Train';
+    const isDisabled = !position || !departureStation || !arrivalStation;
+
+    return (
+      <Button
+        label={submitLabel}
+        disabled={isDisabled}
+        onPress={this.handleSubmit}
+      />
+    );
+  },
+
+  render() {
+    let {
       closestStation,
       leaveArriveTime,
       stationType,
@@ -224,7 +242,6 @@ const HomeScreen = React.createClass({
       departureStation = closestStation;
     }
 
-    const submitLabel = position ? 'Find a Train' : 'Waiting on Location';
 
     const departureStationLabel = departureStation ? Station[departureStation].name : 'Select Departure Station';
     const arrivalStationLabel = arrivalStation ? Station[arrivalStation].name : 'Select Arrival Station';
@@ -311,7 +328,7 @@ const HomeScreen = React.createClass({
         )}
 
         <View style={stylesheet.submitContainer}>
-          <Button label={submitLabel} onPress={this.handleSubmit}/>
+          {this.renderSubmitButton()}
         </View>
 
         {showStationPicker && (

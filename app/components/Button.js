@@ -16,6 +16,9 @@ const stylesheet = StyleSheet.create({
     paddingHorizontal,
     borderRadius
   },
+  viewDisabled: {
+    backgroundColor: 'grey'
+  },
   text: {
     color: 'white',
     fontWeight: 'bold',
@@ -40,9 +43,18 @@ const Button = React.createClass({
   },
 
   render() {
-    const { label, onPress, style, children } = this.props;
+    const { label, onPress, disabled, style, children } = this.props;
     const { touchable, view, text} = style;
     const content = children ? children : label;
+
+    if (disabled) {
+      return (
+        <View style={[stylesheet.view, stylesheet.viewDisabled, view]}>
+          <Text style={[stylesheet.text, stylesheet.textDisabled, text]}>{content}</Text>
+        </View>
+      );
+    }
+
     return (
       <TouchableHighlight onPress={onPress} style={[stylesheet.touchable, touchable]}>
         <View style={[stylesheet.view, view]}>
